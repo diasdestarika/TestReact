@@ -55,7 +55,7 @@ class AuthPage extends React.Component {
           return response;
         } else {
           if (response.status === 401) {
-            this.showNotification('Username/Password salah!', 'error');
+            this.showNotification('Username/Password salah!', 'error'); // errornya jangan langsung tembak
           } else if (response.status === 500) {
             this.showNotification('Internal Server Error', 'error');
           } else {
