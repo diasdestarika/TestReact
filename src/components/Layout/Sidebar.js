@@ -223,6 +223,10 @@ var Penjaluran = [
     { to: '/Ekspedisi-Viewer', id: '4', name: 'Viewer', exact: false, Icon: MdHdrStrong }
 ]
 
+const pageBaru = [
+    {to:'/pagebaru', id: '5', name: 'Page Baru Dias', exact: false, Icon: MdRadioButtonChecked}
+]
+
 const bem = bn.create('sidebar');
 
 class Sidebar extends React.Component {
@@ -660,6 +664,24 @@ class Sidebar extends React.Component {
                         {/* Laporan SP */}
                         {this.allFound(laporanSP) &&
                             laporanSP.map(({ to, name, exact }, index) => (
+                                <NavItem key={index} className={bem.e('nav-item')}>
+                                    <BSNavLink
+                                        id={`navItem-${name}-${index}`}
+                                        className="text-uppercase"
+                                        tag={NavLink}
+                                        to={to}
+                                        activeClassName="active"
+                                        exact={exact}
+                                        onClick={this.handleSidebarControlButton}
+                                    >
+                                        <span className="">{name}</span>
+                                    </BSNavLink>
+                                </NavItem>
+                            ))}
+
+                        {/* Page Baru Dias */}
+                        {this.allFound(pageBaru) &&
+                            pageBaru.map(({ to, name, exact }, index) => (
                                 <NavItem key={index} className={bem.e('nav-item')}>
                                     <BSNavLink
                                         id={`navItem-${name}-${index}`}

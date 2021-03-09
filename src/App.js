@@ -15,6 +15,7 @@ import EkspedisiIntegra from 'pages/ExternalEkspedisi/L1_EkspedisiIntegra';
 // import 'firebase/performance';
 // import 'firebase/auth';
 
+
 const firebaseConfig = {
   apiKey: 'AIzaSyDPJxUKdofUnKhDCFOgZnQFjTqMWqqw56g',
   authDomain: 'neo-genesis-ordermonitoring.firebaseapp.com',
@@ -174,6 +175,11 @@ const EkspedisiViewer = React.lazy(() =>
   import('pages/Scan-Ekspedisi/ekspedisiViewer'),
 );
 
+//Page Baru Dias
+const pageBaru = React.lazy(()=>
+  import ('pages/LatihanDias/PageBaru'),
+);
+
 
 const getBasename = () => {
   return `/${process.env.PUBLIC_URL.split('/').pop()}`;
@@ -280,6 +286,8 @@ class App extends React.Component {
                 <AuthPage {...props} authState={STATE_FORGETPASS} />
               )}
             />
+
+            
             <PrivateRoute
               exact
               menuID="1"
@@ -703,6 +711,15 @@ class App extends React.Component {
                   menuID="4"
                   path="/Ekspedisi-Viewer"
                   component={EkspedisiViewer}
+                />
+                
+                {/* Page Baru Dias */}
+                <PrivateRoute
+                  setTitle={this.setTitle}
+                  exact
+                  menuID="5"
+                  path="/pagebaru"
+                  component={pageBaru}
                 />
 
               </React.Suspense>
