@@ -5,17 +5,24 @@ import {
     Card,
     CardHeader,
     CardBody,
-    Table
+    CardFooter,
+    Button,
+    Table,
+    Form
 } from 'reactstrap'
 import axios from 'axios';
+
 
 
 class PageBaru extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            userlist : []
+            userlist : [],
+            page:1,
+            maxPage:1
         }
+        
     }
 
     componentDidMount(){
@@ -75,6 +82,17 @@ class PageBaru extends React.Component {
                             </tbody>
                         </Table>
                     </CardBody>
+                    <CardFooter>
+                        <Form style = {{textAlign: "center"}} >
+                            <Button >
+                                {"<"}
+                            </Button>
+                            <Button >
+                                {">"}
+                            </Button>
+                        </Form>
+                        
+                    </CardFooter>
                 </Card>
 
             </Page>
