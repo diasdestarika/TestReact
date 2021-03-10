@@ -1,14 +1,18 @@
 import React from 'react'
 import Page from 'components/Page';
 import {
-    Row,
+    Col,
     Card,
     CardHeader,
     CardBody,
     CardFooter,
     Button,
     Table,
-    Form
+    Form,
+    Label,
+    DropdownMenu,
+    DropdownItem,
+    UncontrolledButtonDropdown
 } from 'reactstrap'
 import axios from 'axios';
 
@@ -19,33 +23,87 @@ class PageBaru extends React.Component {
         super(props);
         this.state = {
             userlist : [],
+            datapagination : [],
             page:1,
-            maxPage:1
+            length: 5,
+            maxPage:1,
+
+            btnNextPageDisabled : false,
+            btnPrevPageDisabled : true
         }
         
     }
 
     componentDidMount(){
         this.props.setTitle('')
-        this.getUserList()  
+        this.getUserList()
+        
     }
 
-    getUserList = () => {
-        const url = 'https://randomuser.me/api/?results=10'
+    getUserList = () => {  
+        //MAX array 999
+        const url = 'https://randomuser.me/api/?results=100'
 
         axios
         .get(url)
         .then((res)=>{
             if(res.data.results !== null){
                 this.setState({
-                    userlist:res.data.results
+                    userlist:res.data.results,
                 })
+                
                 console.log(this.state.userlist)
             }
+            this.setState({
+                maxPage: this.state.userlist.length / this.state.length
+            });
         })
+
     }
+
+    NextPage = () => {
+        this.setState({
+            page: this.state.page + 1,
+            btnPrevPageDisabled:false
+        })
+
+        if (this.state.page === this.state.maxPage - 1){
+            this.setState({
+                btnNextPageDisabled:true,
+            })
+        }
+        
+        
+    }
+
+    PrevPage = () => {
+            this.setState({
+                page: this.state.page - 1,
+                btnNextPageDisabled: false
+            })
+        
+        if (this.state.page === 2) {
+            this.setState({
+                btnPrevPageDisabled:true
+            })
+        }
+      
+
+    }
+
+    // firstPage = () => {
+    //     this.setState({
+    //         page: 1
+    //     })
+
+    // }
+
     render (){
-        const {userlist} = this.state
+        const {userlist, page, length} = this.state
+        const last = page * length;
+        const first = last - length;
+        var currentdata = userlist.slice(first, last);
+
         return(
             <Page
                 title = "Page Baru Dias"
@@ -53,7 +111,24 @@ class PageBaru extends React.Component {
                 className="Page Baru Dias"
             >
                 <Card >
-                    <CardHeader><h3>User List</h3></CardHeader>
+                    <CardHeader>
+                        <Col><h3>User List</h3></Col>
+                        <Col>
+                            <UncontrolledButtonDropdown
+                                style={{
+                                    color: "white",
+                                    float: "right",
+                                }}
+                            >
+
+                                <DropdownMenu>
+                                    <DropdownItem>5</DropdownItem>
+                                    <DropdownItem>5</DropdownItem>
+
+                                </DropdownMenu>
+                            </UncontrolledButtonDropdown>
+                        </Col>
+                    </CardHeader>
                     
                     <CardBody>
                         <Table responsive>
@@ -68,7 +143,7 @@ class PageBaru extends React.Component {
                                 </tr>
                             </thead>
                             <tbody>
-                            {userlist && userlist.map((list) =>
+                            {currentdata && currentdata.map((list) =>
                                 <tr key = {list.id}>
                                     <td>{list.name.first} {list.name.last}</td>
                                     <td>{list.email}</td>
@@ -84,10 +159,11 @@ class PageBaru extends React.Component {
                     </CardBody>
                     <CardFooter>
                         <Form style = {{textAlign: "center"}} >
-                            <Button >
+                            <Button onClick = {this.PrevPage.bind(this)} disabled = {this.state.btnPrevPageDisabled} >
                                 {"<"}
                             </Button>
-                            <Button >
+                            <Label > {this.state.page} / {this.state.maxPage}</Label>
+                            <Button onClick = {this.NextPage.bind(this)} disabled = {this.state.btnNextPageDisabled}>
                                 {">"}
                             </Button>
                         </Form>
