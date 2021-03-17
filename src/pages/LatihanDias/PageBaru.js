@@ -30,7 +30,7 @@ import {
 
 
 
-
+//test git
 class PageBaru extends React.Component {
     constructor(props){
         super(props);
