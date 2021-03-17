@@ -2,6 +2,11 @@ import React from 'react'
 import Page from 'components/Page';
 import {
     Col,
+    Row,
+    Modal,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
     Card,
     CardHeader,
     CardBody,
@@ -10,11 +15,19 @@ import {
     Table,
     Form,
     Label,
+    DropdownToggle,
     DropdownMenu,
     DropdownItem,
-    UncontrolledButtonDropdown
+    UncontrolledDropdown,
+    Input,
+    InputGroup,
+    InputGroupAddon
 } from 'reactstrap'
 import axios from 'axios';
+import {
+    MdNoteAdd, MdModeEdit
+} from 'react-icons/md';
+
 
 
 
@@ -27,9 +40,12 @@ class PageBaru extends React.Component {
             page:1,
             length: 5,
             maxPage:1,
+            jumlahData:2,
 
             btnNextPageDisabled : false,
-            btnPrevPageDisabled : true
+            btnPrevPageDisabled : true,
+
+            modalAddIsOpen : false
         }
         
     }
@@ -42,7 +58,7 @@ class PageBaru extends React.Component {
 
     getUserList = () => {  
         //MAX array 999
-        const url = 'https://randomuser.me/api/?results=100'
+        const url = 'https://randomuser.me/api/?results=' + this.state.jumlahData
 
         axios
         .get(url)
@@ -91,12 +107,39 @@ class PageBaru extends React.Component {
 
     }
 
-    // firstPage = () => {
-    //     this.setState({
-    //         page: 1
-    //     })
+    lengthHandler = (evt) => {
+        this.setState({
+            length : evt.target.value
+        })
 
-    // }
+    }
+
+    addModal = () => {
+        this.setState({
+            modalAddIsOpen : !this.state.modalAddIsOpen
+        })
+    }
+
+    buttonAddModal = (type, event) => {
+        if (type === "test"){
+            this.setState({
+                modalAddIsOpen : !this.state.modalAddIsOpen
+            })
+        }
+
+        if (type === "cancel"){
+            this.setState({
+                modalAddIsOpen : !this.state.modalAddIsOpen
+            })
+        }
+
+    }
+
+    handleInputChange = (event) =>{
+        this.setState({
+            jumlahData : event.target.value
+        })
+    }
 
     render (){
         const {userlist, page, length} = this.state
@@ -112,25 +155,48 @@ class PageBaru extends React.Component {
             >
                 <Card >
                     <CardHeader>
-                        <Col><h3>User List</h3></Col>
-                        <Col>
-                            <UncontrolledButtonDropdown
-                                style={{
-                                    color: "white",
-                                    float: "right",
-                                }}
-                            >
-
-                                <DropdownMenu>
-                                    <DropdownItem>5</DropdownItem>
-                                    <DropdownItem>5</DropdownItem>
-
-                                </DropdownMenu>
-                            </UncontrolledButtonDropdown>
-                        </Col>
+                        <Row>
+                            <Col><h3>User List</h3></Col>
+                        </Row>
+                       
+                        
                     </CardHeader>
                     
                     <CardBody>
+                        <Row>
+                            <Col>
+                            <InputGroup
+                                 style = {{
+                                    textAlign : "left",
+                                    width : "300px"
+                                }}
+                            >
+                                <InputGroupAddon addonType="prepend" className="text-capitalize">Ambil</InputGroupAddon>
+                                <Input placeholder = "Max 999" value = {this.state.jumlahData} onChange = {(e) => this.handleInputChange(e)}></Input>
+                                <InputGroupAddon addonType="prepend" className="text-capitalize">Data User</InputGroupAddon>
+                            </InputGroup>
+                            </Col>
+                            <Col>
+                                <UncontrolledDropdown  
+                                    style = {{
+                                        textAlign : "right",
+                                        marginRight : "5%"
+                                    }}
+                                >
+                                    <Label style={{ fontWeight: 'bold' }}>
+                                        Tampilkan &nbsp;
+                                    </Label>
+                                    <DropdownToggle caret>{this.state.length}</DropdownToggle>
+                                    
+                                    <DropdownMenu>
+                                        <DropdownItem value="5" onClick={evt => this.lengthHandler(evt)}>5</DropdownItem>
+                                        <DropdownItem value="10" onClick={evt => this.lengthHandler(evt)}>10</DropdownItem>
+                                        <DropdownItem  value="15" onClick={evt => this.lengthHandler(evt)}>15</DropdownItem>
+                                    </DropdownMenu>
+                                </UncontrolledDropdown>
+                            </Col>
+
+                        </Row>
                         <Table responsive>
                             <thead>
                                 <tr className="text-capitalize align-middle text-center">
@@ -140,6 +206,7 @@ class PageBaru extends React.Component {
                                     <th>Jenis Kelamin</th>
                                     <th>Alamat</th>
                                     <th>No HP</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -147,10 +214,15 @@ class PageBaru extends React.Component {
                                 <tr key = {list.id}>
                                     <td>{list.name.first} {list.name.last}</td>
                                     <td>{list.email}</td>
-                                    <td>{list.dob.age}</td>
-                                    <td>{list.gender}</td>
+                                    <td className="text-center">{list.dob.age}</td>
+                                    <td className="text-center">{list.gender}</td>
                                     <td>{list.location.street.name}</td>
                                     <td>{list.cell}</td>
+                                    <td>
+                                        <Button onClick={this.addModal}>
+                                            <MdModeEdit size = "20"></MdModeEdit>
+                                        </Button>
+                                    </td>
                                 </tr>
                             )}
 
@@ -159,7 +231,7 @@ class PageBaru extends React.Component {
                     </CardBody>
                     <CardFooter>
                         <Form style = {{textAlign: "center"}} >
-                            <Button onClick = {this.PrevPage.bind(this)} disabled = {this.state.btnPrevPageDisabled} >
+                            <Button onClick = {this.PrevPage} disabled = {this.state.btnPrevPageDisabled} >
                                 {"<"}
                             </Button>
                             <Label > {this.state.page} / {this.state.maxPage}</Label>
@@ -167,8 +239,23 @@ class PageBaru extends React.Component {
                                 {">"}
                             </Button>
                         </Form>
+
+                        <Row style = {{textAlign: "center"}}>
+                            <Button onClick = {this.addModal}> <MdNoteAdd size = "20"></MdNoteAdd>Add</Button>
+                        </Row>
                         
                     </CardFooter>
+
+                <Modal isOpen = {this.state.modalAddIsOpen}>
+                    <ModalHeader>Add New</ModalHeader>
+                    <ModalBody>
+                        <Label>Test Modal</Label>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color = "primary">Test</Button>
+                        <Button color = "secondary" onClick = {e => this.buttonAddModal('cancel', e)} >Cancel</Button>
+                    </ModalFooter>
+                </Modal>
                 </Card>
 
             </Page>
