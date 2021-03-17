@@ -28,7 +28,7 @@ import {
     MdNoteAdd, MdModeEdit
 } from 'react-icons/md';
 import LoadingSpinner from '../LoadingSpinner';
-
+import NotificationSystem from 'react-notification-system';
 
 
 //test git
@@ -37,7 +37,6 @@ class PageBaru extends React.Component {
         super(props);
         this.state = {
             userlist : [],
-            datapagination : [],
             page:1,
             length: 5,
             maxPage:1,
@@ -60,6 +59,12 @@ class PageBaru extends React.Component {
     getUserList = () => {  
         //MAX array 999
         const url = 'https://randomuser.me/api/?results=' + this.state.jumlahData
+       //const url = 'https://randomuser.me/api/?results=' + jumlahData
+
+       //console.log(jumlahData)
+    //    this.setState({
+    //        jumlahData: this.state.jumlahData
+    //    })
 
         axios
         .get(url)
@@ -72,9 +77,9 @@ class PageBaru extends React.Component {
                 console.log(this.state.userlist)
                 console.log(this.state.jumlahData)
             }
-            this.setState({
-                maxPage: Math.ceil(this.state.userlist.length / this.state.length)
-            });
+            // this.setState({
+            //     maxPage: Math.ceil(this.state.userlist.length / this.state.length)
+            // });
         })
 
     }
@@ -111,7 +116,9 @@ class PageBaru extends React.Component {
 
     lengthHandler = (evt) => {
         this.setState({
-            length : evt.target.value
+            length : evt.target.value,
+            page : 1,
+            btnPrevPageDisabled:true
         })
 
     }
@@ -141,6 +148,7 @@ class PageBaru extends React.Component {
         this.setState({
             jumlahData : event.target.value
         })
+        console.log(this.state.jumlahData + 'handleINputChange')
         this.getUserList()
        
 
@@ -151,6 +159,7 @@ class PageBaru extends React.Component {
         const last = page * length;
         const first = last - length;
         var currentdata = userlist.slice(first, last);
+        this.state.maxPage = Math.ceil(userlist.length / length);
 
         return(
             <Page
@@ -180,14 +189,16 @@ class PageBaru extends React.Component {
                                 {/* <Input placeholder = "Max 999" value = {this.state.jumlahData} onChange = {this.handleInputChange}></Input> */}
                                 <select 
                                     value = {this.state.value}
-                                    onChange = {e => this.handleInputChange(e)}
+                                    //onChange = {e => this.handleInputChange(e)}
+                                    //onChange = {() => this.getUserList()}
                                 >
                                     <option value = "50" >50</option>
-                                    <option value = "100">100</option>
+                                    <option value = "100" onClick = {event => this.handleInputChange(event)}>100</option>
                                     <option value = "250">250</option>
                                     <option value = "500">500</option>
                                 </select>
-                                <InputGroupAddon addonType="prepend" className="text-capitalize">Data User</InputGroupAddon>
+                    
+                                <InputGroupAddon addonType="append" className="text-capitalize">Data User</InputGroupAddon>
                             </InputGroup>
                             </Col>
                             <Col>
@@ -224,21 +235,33 @@ class PageBaru extends React.Component {
                                 </tr>
                             </thead>
                             <tbody>
-                            {currentdata && currentdata.map((list) =>
-                                <tr key = {list.id}>
-                                    <td>{list.name.first} {list.name.last}</td>
-                                    <td>{list.email}</td>
-                                    <td className="text-center">{list.dob.age}</td>
-                                    <td className="text-center">{list.gender}</td>
-                                    <td>{list.location.street.name}</td>
-                                    <td>{list.cell}</td>
-                                    <td>
-                                        <Button onClick={this.addModal}>
-                                            <MdModeEdit size = "20"></MdModeEdit>
-                                        </Button>
-                                    </td>
-                                </tr>
-                            )}
+                                {!userlist ? (
+                      (
+                        <tr>
+                          <td
+                            style={{ backgroundColor: 'white' }}
+                            colSpan="17"
+                            className="text-center"
+                          >
+                            TIDAK ADA DATA
+                          </td>
+                        </tr>
+                      ) || <LoadingSpinner status={4}></LoadingSpinner>
+                    ) : currentdata.map((list) =>
+                        <tr key = {list.id}>
+                            <td>{list.name.first} {list.name.last}</td>
+                            <td>{list.email}</td>
+                            <td className="text-center">{list.dob.age}</td>
+                            <td className="text-center">{list.gender}</td>
+                            <td>{list.location.street.name}</td>
+                            <td>{list.cell}</td>
+                            <td>
+                                <Button onClick={this.addModal}>
+                                    <MdModeEdit size = "20"></MdModeEdit>
+                                </Button>
+                            </td>
+                        </tr> )
+                    }
 
                             </tbody>
                         </Table>
