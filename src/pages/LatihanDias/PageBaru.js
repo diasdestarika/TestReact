@@ -27,6 +27,7 @@ import axios from 'axios';
 import {
     MdNoteAdd, MdModeEdit
 } from 'react-icons/md';
+import LoadingSpinner from '../LoadingSpinner';
 
 
 
@@ -40,7 +41,7 @@ class PageBaru extends React.Component {
             page:1,
             length: 5,
             maxPage:1,
-            jumlahData:2,
+            jumlahData:50,
 
             btnNextPageDisabled : false,
             btnPrevPageDisabled : true,
@@ -69,9 +70,10 @@ class PageBaru extends React.Component {
                 })
                 
                 console.log(this.state.userlist)
+                console.log(this.state.jumlahData)
             }
             this.setState({
-                maxPage: this.state.userlist.length / this.state.length
+                maxPage: Math.ceil(this.state.userlist.length / this.state.length)
             });
         })
 
@@ -139,6 +141,9 @@ class PageBaru extends React.Component {
         this.setState({
             jumlahData : event.target.value
         })
+        this.getUserList()
+       
+
     }
 
     render (){
@@ -172,7 +177,16 @@ class PageBaru extends React.Component {
                                 }}
                             >
                                 <InputGroupAddon addonType="prepend" className="text-capitalize">Ambil</InputGroupAddon>
-                                <Input placeholder = "Max 999" value = {this.state.jumlahData} onChange = {(e) => this.handleInputChange(e)}></Input>
+                                {/* <Input placeholder = "Max 999" value = {this.state.jumlahData} onChange = {this.handleInputChange}></Input> */}
+                                <select 
+                                    value = {this.state.value}
+                                    onChange = {e => this.handleInputChange(e)}
+                                >
+                                    <option value = "50" >50</option>
+                                    <option value = "100">100</option>
+                                    <option value = "250">250</option>
+                                    <option value = "500">500</option>
+                                </select>
                                 <InputGroupAddon addonType="prepend" className="text-capitalize">Data User</InputGroupAddon>
                             </InputGroup>
                             </Col>
@@ -234,7 +248,7 @@ class PageBaru extends React.Component {
                             <Button onClick = {this.PrevPage} disabled = {this.state.btnPrevPageDisabled} >
                                 {"<"}
                             </Button>
-                            <Label > {this.state.page} / {this.state.maxPage}</Label>
+                            <Label > &nbsp; {this.state.page} / {this.state.maxPage} &nbsp;</Label>
                             <Button onClick = {this.NextPage.bind(this)} disabled = {this.state.btnNextPageDisabled}>
                                 {">"}
                             </Button>
