@@ -20,6 +20,7 @@
     "react-activity": "^1.2.2",
     "react-back-to-top-button": "0.0.14",
     "react-barcode": "^1.4.0",
+    "react-bootstrap-validation": "^0.1.11",
     "react-chartjs-2": "^2.7.4",
     "react-component-queries": "^2.3.0",
     "react-d3-map": "^0.8.3",

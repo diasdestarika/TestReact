@@ -21,14 +21,20 @@ import {
     UncontrolledDropdown,
     Input,
     InputGroup,
-    InputGroupAddon
+    InputGroupAddon,
+    // Toast,
+    // ToastHeader,
+    // ToastBody,
 } from 'reactstrap'
 import axios from 'axios';
 import {
-    MdNoteAdd, MdModeEdit
+    MdNoteAdd, MdModeEdit, MdLoyalty
 } from 'react-icons/md';
 import LoadingSpinner from '../LoadingSpinner';
 import NotificationSystem from 'react-notification-system';
+
+
+
 
 
 //test git
@@ -45,7 +51,9 @@ class PageBaru extends React.Component {
             btnNextPageDisabled : false,
             btnPrevPageDisabled : true,
 
-            modalAddIsOpen : false
+            modalAddIsOpen : false,
+
+            toastShow : false
         }
         
     }
@@ -154,6 +162,10 @@ class PageBaru extends React.Component {
 
     }
 
+    showNotofication = (message, type) => {
+        this.no
+    }
+
     render (){
         const {userlist, page, length} = this.state
         const last = page * length;
@@ -167,6 +179,8 @@ class PageBaru extends React.Component {
                 breadcrumbs={[{ name: 'Page Baru Dias', active: true }]}
                 className="Page Baru Dias"
             >
+                
+            
                 <Card >
                     <CardHeader>
                         <Row>
