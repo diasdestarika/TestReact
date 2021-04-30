@@ -136,7 +136,7 @@ class PageBaru extends React.Component {
             modalAddIsOpen : !this.state.modalAddIsOpen
         })
     }
-
+    //test
     buttonAddModal = (type, event) => {
         if (type === "test"){
             this.setState({
