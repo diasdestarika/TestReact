@@ -141,13 +141,13 @@ class PageBaru extends React.Component {
         if (type === "test"){
             this.setState({
                 modalAddIsOpen : !this.state.modalAddIsOpen
-            })
+            }, () => this.getUserList())
         }
 
         if (type === "cancel"){
             this.setState({
                 modalAddIsOpen : !this.state.modalAddIsOpen
-            })
+            }, () => this.getUserList())
         }
 
     }
@@ -162,9 +162,9 @@ class PageBaru extends React.Component {
 
     }
 
-    showNotofication = (message, type) => {
-        this.no
-    }
+    // showNotofication = (message, type) => {
+    //     this.no
+    // }
 
     render (){
         const {userlist, page, length} = this.state
