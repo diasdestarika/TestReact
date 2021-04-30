@@ -162,9 +162,8 @@ class PageBaru extends React.Component {
 
     }
 
-    // showNotofication = (message, type) => {
-    //     this.no
-    // }
+    showNotofication = (message, type) => {
+    }
 
     render (){
         const {userlist, page, length} = this.state
