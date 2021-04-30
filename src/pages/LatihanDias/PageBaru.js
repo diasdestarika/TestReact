@@ -162,7 +162,11 @@ class PageBaru extends React.Component {
 
     }
 
-    showNotofication = (message, type) => {
+    showNotofication = (message, type, angka) => {
+    }
+
+    fungsi = (angka1, angka2) =>{
+        console.log('test', angka1)
     }
 
     render (){
