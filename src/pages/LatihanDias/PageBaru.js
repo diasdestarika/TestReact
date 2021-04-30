@@ -165,6 +165,11 @@ class PageBaru extends React.Component {
     showNotofication = (message, type) => {
     }
 
+    showMesagge = (kata1, kata2) => {
+        var angka1 = 1
+        console.log(angka1);
+    }
+
     render (){
         const {userlist, page, length} = this.state
         const last = page * length;
