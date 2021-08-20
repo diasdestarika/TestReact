@@ -130,6 +130,9 @@ class OrderB2B extends React.Component {
     var gudangID = window.localStorage.getItem('gID');
     
     console.log(this.state.gudangID);
+    var urlB = 'htpp://localhost:0998'
+    var urlC = 'hahhhahah'
+    
 
     const urlA = myUrl.url_b2b + 'type=late' + '&gudangID=' + gudangID;
 
