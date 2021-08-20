@@ -128,7 +128,8 @@ class OrderB2B extends React.Component {
     // const trace = perf.trace('getTerlambat');
     // trace.start();
     var gudangID = window.localStorage.getItem('gID');
-    //console.log(this.state.gudangID);
+    
+    console.log(this.state.gudangID);
 
     const urlA = myUrl.url_b2b + 'type=late' + '&gudangID=' + gudangID;
 
