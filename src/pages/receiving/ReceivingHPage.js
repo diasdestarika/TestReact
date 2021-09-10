@@ -149,7 +149,7 @@ class ReceivingHPage extends React.Component {
 
   pagination = (value, arrow, maxPage = 0) => {
     var currPage = Number(value);
-    if (currPage + arrow > 0 && currPage + arrow <= maxPage) {
+    if (currPage + arrow > 0 ) { //&& currPage + arrow <= maxPage) {
       this.setState(
         {
           currentPage: currPage + arrow,
