@@ -1,6 +1,12 @@
 import { Content, Footer, Header, Sidebar } from 'components/Layout';
 import React from 'react';
-import { MdImportantDevices, MdLoyalty } from 'react-icons/md';
+import {
+  MdImportantDevices,
+  // MdCardGiftcard,
+  // MdLoyalty,
+} from 'react-icons/md';
+import NotificationSystem from 'react-notification-system';
+import { NOTIFICATION_SYSTEM_STYLE } from 'utils/constants';
 
 class MainLayout extends React.Component {
   static isSidebarOpen() {
@@ -9,7 +15,13 @@ class MainLayout extends React.Component {
       .classList.contains('cr-sidebar--close');
   }
 
-  componentWillReceiveProps({ breakpoint }) {
+  // UNSAFE_componentWillReceiveProps({ breakpoint }) {
+  //   if (breakpoint !== this.props.breakpoint) {
+  //     this.checkBreakpoint(breakpoint);
+  //   }
+  // }
+  
+  componentDidUpdate({ breakpoint }) {
     if (breakpoint !== this.props.breakpoint) {
       this.checkBreakpoint(breakpoint);
     }
@@ -25,22 +37,23 @@ class MainLayout extends React.Component {
 
       this.notificationSystem.addNotification({
         title: <MdImportantDevices />,
-        message: 'Selamat datang di Logistic Page!',
+        message: 'Selamat datang di Testing React Apps, Selamat Bekerja!',
         level: 'info',
       });
     }, 1500);
 
-    setTimeout(() => {
-      if (!this.notificationSystem) {
-        return;
-      }
+    // setTimeout(() => {
+    //   if (!this.notificationSystem) {
+    //     return;
+    //   }
 
-      this.notificationSystem.addNotification({
-        title: <MdLoyalty />,
-        message: 'Selamat bekerja!',
-        level: 'info',
-      });
-    }, 2500);
+    //   this.notificationSystem.addNotification({
+    //     title: <MdLoyalty />,
+    //     message:
+    //       'Selamat bekerja!',
+    //     level: 'info',
+    //   });
+    // }, 2500);
   }
 
   // close sidebar when
@@ -85,10 +98,18 @@ class MainLayout extends React.Component {
       <main className="cr-app bg-light">
         <Sidebar />
         <Content fluid onClick={this.handleContentClick}>
-          <Header title={this.props.title} color={this.props.color} />
+          <Header />
           {children}
           <Footer />
         </Content>
+
+        <NotificationSystem
+          dismissible={false}
+          ref={notificationSystem =>
+            (this.notificationSystem = notificationSystem)
+          }
+          style={NOTIFICATION_SYSTEM_STYLE}
+        />
       </main>
     );
   }

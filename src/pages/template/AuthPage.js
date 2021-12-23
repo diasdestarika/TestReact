@@ -31,7 +31,6 @@ class AuthPage extends React.Component {
   requestLogin = async (username, password) => {
     const urlA = myUrl.url_login;
     var status = false;
-    //console.log("url", urlA);
 
     var payload = {
       username: username,
@@ -47,26 +46,26 @@ class AuthPage extends React.Component {
       },
       body: JSON.stringify(payload),
     };
-    //console.log(option);
+    // console.log(option);
     let data = await fetch(urlA, option)
       .then(response => {
+        console.log('RESPONSE', response);
         if (response.ok) {
-          //console.log("LOGIN2");
+          // console.log("LOGIN2");
           return response;
         } else {
           if (response.status === 401) {
-            this.showNotification('Username/Password salah!', 'error'); // errornya jangan langsung tembak
+            this.showNotification('Username/Password salah!', 'error');
           } else if (response.status === 500) {
             this.showNotification('Internal Server Error', 'error');
           } else {
-            // console.log("FETCHING DONE");
-            this.showNotification('Koneksi ke server gagal 1', 'error');
+            this.showNotification('Koneksi ke server gagal', 'error');
           }
           return true;
         }
       })
       .catch(err => {
-        //console.log(err);
+        // console.log(err);
         this.showNotification('Koneksi ke server gagal!', 'error');
         return true;
       });
@@ -78,7 +77,7 @@ class AuthPage extends React.Component {
       var token = data.headers.get('Authorization');
       data = await data.json();
 
-      //console.log(data);
+      // console.log(data);
       var data1 = data.data;
       var error = data.error;
       var metadata = data.metadata;
@@ -91,33 +90,34 @@ class AuthPage extends React.Component {
             JSON.stringify(data1.mem_access),
           );
           window.localStorage.setItem('profile', JSON.stringify(data1));
-          //console.log("TOKEN", window.localStorage.getItem('tokenCookies'));
-          //console.log("accessList", window.localStorage.getItem('accessList'));
+          console.log("DATA FORCE CHANGE", data1);
 
           if (data1.mem_forcechangepasswordyn === 'Y') {
-            //console.log("FORE CHANGE YES");
+            // console.log("FORE CHANGE YES");
             this.props.history.push({
               pathname: '/resetpassword',
               state: { ok: true },
             });
+            // window.location.replace('/resetpassword');
           } else {
-            //console.log("FORE CHANGE NO");
+            // console.log("FORE CHANGE NO");
+            // {console.log("MASUK SINI")}
             // this.props.history.push({
-            //   pathname: '/Dashboard',
+            //   pathname: '/',
             //   state: { profile: data.result }
             // })
             window.location.replace('/');
           }
         } else {
           this.showNotification(metadata.message, 'error');
-          //console.log(metadata.message);
+          // console.log(metadata.message);
         }
       } else {
         this.showNotification(error.msg, 'error');
-        //console.log(error.msg);
+        // console.log(error.msg);
       }
     } else {
-      //console.log("FETCHING DONE");
+      // console.log("FETCHING DONE");
       this.showNotification('Koneksi ke server gagal', 'error');
     }
 
@@ -155,7 +155,7 @@ class AuthPage extends React.Component {
               }
               style={NOTIFICATION_SYSTEM_STYLE}
             />
-            {/* {//console.log(this.props)} */}
+            {/* {console.log(this.props)} */}
             <AuthForm
               authState={this.props.authState}
               onChangeAuthState={this.handleAuthState}

@@ -27,7 +27,15 @@ export const NOTIFICATION_SYSTEM_STYLE = {
 
     warning: {
       borderTop: 0,
-      backgroundColor: '#ffd700',
+      backgroundColor: 'hsl(32, 100%, 50%)',
+      WebkitBoxShadow: 0,
+      MozBoxShadow: 0,
+      boxShadow: 0,
+    },
+
+    danger: {
+      borderTop: 0,
+      backgroundColor: '#f85032',
       WebkitBoxShadow: 0,
       MozBoxShadow: 0,
       boxShadow: 0,
@@ -116,6 +124,11 @@ export const NOTIFICATION_SYSTEM_STYLE = {
 
     info: {
       backgroundColor: '#00c9ff',
+      color: '#fff',
+    },
+
+    danger: {
+      backgroundColor: '#f85032',
       color: '#fff',
     },
   },

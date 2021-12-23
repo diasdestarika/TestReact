@@ -5,9 +5,8 @@ import React from 'react';
 import {
   MdClearAll,
   MdExitToApp,
-  MdEditLocation,
+  // MdEditLocation,
   MdNotificationsActive,
-  MdPublic,
 } from 'react-icons/md';
 import {
   Button,
@@ -45,7 +44,6 @@ class Header extends React.Component {
     isOpenUserCardPopover: false,
     redirect: false,
     redirectGudang: false,
-    redirectDashboard: false,
   };
 
   toggleNotificationPopover = () => {
@@ -67,63 +65,67 @@ class Header extends React.Component {
   handleSidebarControlButton = event => {
     event.preventDefault();
     event.stopPropagation();
-
     document.querySelector('.cr-sidebar').classList.toggle('cr-sidebar--open');
   };
 
   signOut = () => {
     window.localStorage.removeItem('tokenCookies');
     window.localStorage.removeItem('accessList');
-    this.setState({
-      redirect: true,
-    });
+    window.localStorage.removeItem('profile');
+    window.localStorage.removeItem('tokenCookies');
+    document.cookie = 'tokenCookies=';
+    this.setState(
+      {
+        redirect: true,
+      },
+      // () =>
+      //   console.log(
+      //     'tokenCookies',
+      //     window.localStorage.getItem('tokenCookies'),
+      //     window.localStorage.getItem('accessList'),
+      //     window.localStorage.getItem('profile'),
+      //     window.localStorage.getItem('tokenCookies'),
+      //   ),
+    );
   };
 
   keluarGudang = () => {
     this.setState({
       redirectGudang: true,
-      title: '',
-    });
-  };
-
-  keDashboard = () => {
-    this.setState({
-      redirectDashboard: true,
-      isOpenUserCardPopover: false,
     });
   };
 
   renderRedirect = () => {
     if (this.state.redirect) {
       return <Redirect to="/login" />;
-    } else if (this.state.redirectGudang) {
-      const { title } = this.props;
-      this.setState({ title: '' });
-      return <Redirect to="/" />;
-    } else if (this.state.redirectDashboard) {
-      this.setState({ redirectDashboard: false });
-      return <Redirect to="/Dashboard" />;
     }
   };
 
-  setDataProfile() {
-    var profileName = JSON.parse(window.localStorage.getItem('profile'));
-    if (profileName === null) {
+  setProfileData() {
+    var profileObj = JSON.parse(window.localStorage.getItem('profile'));
+
+    if (profileObj === null) {
       return;
     } else {
-      this.setState({
-        nip: profileName.mem_nip,
-        nama: profileName.mem_username,
-      });
+      this.setState(
+        {
+          nip_user: profileObj.mem_nip,
+          nama_user: profileObj.mem_username,
+        },
+        // () => {
+        //   console.log('1', profileObj);
+        // },
+      );
     }
   }
+
   componentDidMount() {
-    this.setDataProfile();
+    this.setProfileData();
   }
 
-  // <SearchInput />
   render() {
-    var gudangName = window.localStorage.getItem('gName');
+    // var profileObj = JSON.parse(window.localStorage.getItem('profile'));
+    // var gudangName = window.localStorage.getItem('gName');
     return (
       <Navbar light expand className={bem.b('bg-white')}>
         {this.renderRedirect()}
@@ -148,46 +150,22 @@ class Header extends React.Component {
         <NavLink id="Popover2">
           <Avatar onClick={this.toggleUserCardPopover} className="can-click" />
         </NavLink>
-        <Popover
-          placement="bottom-end"
-          isOpen={this.state.isOpenUserCardPopover}
-          toggle={this.toggleUserCardPopover}
-          target="Popover2"
-          className="p-0 border-0"
-          style={{ minWidth: 250 }}
-        ></Popover>
 
         <Popover
           placement="bottom-end"
           isOpen={this.state.isOpenUserCardPopover}
-          toggle={this.toggleUserCardPopover}
+          toggle={() => this.toggleUserCardPopover}
           target="Popover2"
           className="p-0 border-0"
           style={{ minWidth: 250 }}
         >
           <PopoverBody className="p-0 border-light">
             <UserCard
-              title={this.state.nama}
-              subtitle={gudangName}
+              title={this.state.nama_user}
+              subtitle="Testing React"
               className="border-light"
             >
               <ListGroup flush>
-                <ListGroupItem
-                  tag="button"
-                  action
-                  onClick={this.keDashboard}
-                  className="border-light"
-                >
-                  <MdPublic /> Dashboard
-                </ListGroupItem>
-                <ListGroupItem
-                  tag="button"
-                  action
-                  onClick={this.keluarGudang}
-                  className="border-light"
-                >
-                  <MdEditLocation /> Pilih Gudang
-                </ListGroupItem>
                 <ListGroupItem
                   tag="button"
                   action

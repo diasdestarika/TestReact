@@ -1,3 +1,5 @@
+/* eslint-disable default-case */
+/* eslint-disable no-unused-vars */
 import logo200Image from 'assets/img/logo/logo_200.png';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -7,7 +9,7 @@ import "firebase/performance";
 import "firebase/auth";
 import * as myUrl from 'pages/urlLink';
 import { MdAutorenew } from 'react-icons/md';
-// global grecaptcha
+/*global grecaptcha*/
 
 import Timer from 'components/Timer';
 
@@ -37,10 +39,6 @@ class AuthForm extends React.Component {
 
   get isLogin() {
     return this.props.authState === STATE_LOGIN;
-  }
-
-  get isCheck() {
-    return this.props.authState === STATE_CHECK;
   }
 
   get isForgetPass() {
@@ -79,9 +77,9 @@ class AuthForm extends React.Component {
     this.setState({ enterButton: true })
     this.fetchData();
 
-    //console.log("AAA")
+    // console.log("AAA")
     if (!buttonText && this.isLogin) {
-      //console.log("TERSERAH KATA NICO" + this.state.username + "   " + this.state.password);
+      // console.log("TERSERAH KATA NICO" + this.state.username + "   " + this.state.password);
 
       if (true) {
         console.log(await this.props.onButtonClick(username, password))
@@ -92,32 +90,32 @@ class AuthForm extends React.Component {
     }
 
     if (!buttonText && this.isForgetPass) {
-      //console.log(this.fetchData())
-      //console.log(this.state.loading)
+      // console.log(this.fetchData())
+      // console.log(this.state.loading)
       //menetukan email atau phone
       if (result !== null) {
         if (result[1] !== undefined) {
-          //console.log(this.state.loading);
+          // console.log(this.state.loading);
           this.setState({
             emailOrPhone: false,
             enterButton: false,
-            // loading: false
+            loading: false
           })
 
           //inputan nomor handphone
           var phonenum = this.state.inputEmailNumber;
           if (result[2] === undefined) {
-            //console.log(this.state.loading);
+            // console.log(this.state.loading);
 
             //angka dimulai 0
             this.changeForgottenPassword(phonenum, "");
             this.setState({
               emailOrPhone: false,
               enterButton: false,
-              // loading:false
+              loading:false
             })
           } else {
-            //console.log(this.state.loading);
+            // console.log(this.state.loading);
             //angka dimulai +62
             phonenum = phonenum.replace('+62', '0');
             this.changeForgottenPassword(phonenum, "");
@@ -129,24 +127,24 @@ class AuthForm extends React.Component {
           }
         }
         else if (result[3] !== undefined) {
-          //console.log(this.state.loading);
+          // console.log(this.state.loading);
           //inputan email
           this.setState({
             emailOrPhone: true,
             enterButton: false,
             loading: false
           })
-          //console.log("EMAIL GO");
+          // console.log("EMAIL GO");
           this.changeForgottenPassword("", this.state.inputEmailNumber);
         }
       }
     }
-    //console.log(this.state.loading);
-    //console.log("NEXT STEP DONE");
+    // console.log(this.state.loading);
+    // console.log("NEXT STEP DONE");
   }
 
   fetchData = () => {
-    //console.log("GUY DISABLE LOADING")
+    // console.log("GUY DISABLE LOADING")
     this.setState({ loading: true });
   };
 
@@ -169,50 +167,50 @@ class AuthForm extends React.Component {
       },
       body: JSON.stringify(payload)
     }
-    //console.log(option);
+    // console.log(option);
     let data = await fetch(urlA, option)
       .then(response => {
         if (response.ok) {
-          //console.log("CHECK FORGET");
+          // console.log("CHECK FORGET");
           return response
         } else {
           this.props.showNotification("Koneksi ke server gagal!", 'error');
         }
       }).catch((err) => {
-        //console.log(err);
+        // console.log(err);
         this.props.showNotification("Koneksi ke server gagal!", 'error');
       });
     if (data) {
 
-      var token = data.headers.get('Authorization')
+      var tokenCookies = data.headers.get('Authorization')
       data = await data.json();
       var error = data.error;
       var metadata = data.metadata;
 
-      //console.log(error);
-      //console.log(metadata);
+      // console.log(error);
+      // console.log(metadata);
 
 
       if (error.status === false) {
         if (metadata.status === true) {
-          window.localStorage.setItem('tokenOTP', token);
+          window.localStorage.setItem('tokenCookiesOTP', tokenCookies);
           if (phonenum !== "") {
-            window.localStorage.setItem('tokenResetPwd', token);
+            window.localStorage.setItem('tokenCookiesResetPwd', tokenCookies);
             phonenum = phonenum.replace('+62', '0');
             this.sendVerificationCode(phonenum);
           } else {
             //EMAIL
-            window.localStorage.setItem('tokenOTP', token);
+            window.localStorage.setItem('tokenCookiesOTP', tokenCookies);
             this.props.showNotification(metadata.message, 'info');
 
-            this.setState({ OTP: true }, () =>
-              this.setState({
-                showNewOTP: false,
-                timerMinute: 1,
-                timerSecond: 0,
-                timeUpMessage: "Waktu Habis! Tolong request ulang OTP",
-                resetTimer: true
-              }, () => this.setState({ resetTimer: false })));
+            this.setState({ OTP: true },()=>
+            this.setState({
+              showNewOTP: false,
+              timerMinute: 1,
+              timerSecond: 0,
+              timeUpMessage: "Waktu Habis! Tolong request ulang OTP",
+              resetTimer: true
+            }, () => this.setState({ resetTimer: false })));
           }
         } else {
           this.props.showNotification(metadata.message, 'error');
@@ -232,18 +230,18 @@ class AuthForm extends React.Component {
     firebase.auth().languageCode = 'id';
     firebase.auth().signInWithPhoneNumber(phoneNumber, appverifier)
       .then((confirmationResult) => {
-        //console.log(confirmationResult);
-        //console.log("KEEP LOOP");
+        // console.log(confirmationResult);
+        // console.log("KEEP LOOP");
 
-        this.setState({ OTP: true }, () =>
-          this.setState({
-            sendCodeId: confirmationResult.verificationId,
-            showNewOTP: false,
-            timerMinute: 1,
-            timerSecond: 0,
-            timeUpMessage: "Waktu Habis! Tolong request ulang OTP",
-            resetTimer: true
-          }, () => this.setState({ resetTimer: false })));
+        this.setState({ OTP: true },()=>
+            this.setState({
+              sendCodeId: confirmationResult.verificationId,
+              showNewOTP: false,
+              timerMinute: 1,
+              timerSecond: 0,
+              timeUpMessage: "Waktu Habis! Tolong request ulang OTP",
+              resetTimer: true
+            }, () => this.setState({ resetTimer: false })));
 
         window.confirmationResult = confirmationResult;
         this.props.showNotification("OTP telah dikirimkan ke " + INPUTTED_PHONENUMBER, 'info');
@@ -295,20 +293,20 @@ class AuthForm extends React.Component {
       otp: code,
     };
 
-    //console.log(payload);
+    // console.log(payload);
     const option = {
       method: "POST",
       json: true,
       headers: {
         "Content-Type": "application/json;charset=UTF-8",
-        "Authorization": window.localStorage.getItem('tokenOTP')
+        "Authorization": window.localStorage.getItem('tokenCookiesOTP')
       },
       body: JSON.stringify(payload)
     }
 
 
 
-    //console.log(option);
+    // console.log(option);
     let data = await fetch(urlA, option)
       .then(response => {
         if (response.ok) {
@@ -317,36 +315,36 @@ class AuthForm extends React.Component {
           this.props.showNotification("Koneksi ke server gagal!", 'error');
         }
       }).catch((err) => {
-        //console.log(err);
+        // console.log(err);
         this.props.showNotification("Koneksi ke server gagal!", 'error');
       });
 
     if (data) {
-      //console.log(data);
-      var token = data.headers.get('Authorization');
+      // console.log(data);
+      var tokenCookies = data.headers.get('Authorization');
       data = await data.json();
-      //console.log(data)
+      // console.log(data)
       var error = data.error;
       var metadata = data.metadata;
 
       if (error.status === false) {
-        if (metadata.status === true) {
-          window.localStorage.setItem('tokenResetPwd', token);
+        if (metadata.Status === "TRUE") {
+          window.localStorage.setItem('tokenCookiesResetPwd', tokenCookies);
           //GOTO RESET PWD
-          this.props.showNotification(metadata.message, 'info');
+          this.props.showNotification(metadata.Message, 'info');
 
           this.props.gotoChangePwd();
         } else {
-          this.props.showNotification(metadata.message, 'error');
-          if (metadata.message.toLowerCase().includes("expired")) {
-            window.localStorage.removeItem('tokenOTP');
+          this.props.showNotification(metadata.Message, 'error');
+          if (metadata.Message.toLowerCase().includes("expired")) {
+            window.localStorage.removeItem('tokenCookiesOTP');
             this.props.history.push({
-              pathname: '/login',
+              pathname: '/',
             })
           }
         }
       } else {
-        this.props.showNotification(error.msg, 'error');
+        this.props.showNotification(error.responseMessage, 'error');
       }
     }
   }
@@ -405,12 +403,12 @@ class AuthForm extends React.Component {
       json: true,
       headers: {
         "Content-Type": "application/json;charset=UTF-8",
-        "Authorization": "window.localStorage.getItem('tokenOTP')"
+        "Authorization": "window.localStorage.getItem('tokenCookiesOTP')"
       },
       body: JSON.stringify(payload)
     }
 
-    //console.log(option);
+    // console.log(option);
     let data = await fetch(urlA, option)
       .then(response => {
         if (response.ok) {
@@ -419,12 +417,12 @@ class AuthForm extends React.Component {
           this.props.showNotification("Koneksi ke server gagal!", 'error');
         }
       }).catch((err) => {
-        //console.log(err);
+        // console.log(err);
         this.props.showNotification("Koneksi ke server gagal!", 'error');
       });
 
     if (data) {
-      var token = data.headers.get('Authorization');
+      var tokenCookies = data.headers.get('Authorization');
 
       data = await data.json();
 
@@ -432,8 +430,8 @@ class AuthForm extends React.Component {
       var metadata = data.metadata;
 
       if (error.status === false) {
-        if (metadata.status === true) {
-          window.localStorage.setItem('tokenOTP', token);
+        if (metadata.Status === "TRUE") {
+          window.localStorage.setItem('tokenCookiesOTP', tokenCookies);
           //GOTO RESET PWD
           this.props.showNotification("Nomor OTP baru telah dikirim", 'info');
           this.setState({
@@ -444,10 +442,10 @@ class AuthForm extends React.Component {
             resetTimer: true
           }, () => this.setState({ resetTimer: false }));
         } else {
-          this.props.showNotification(metadata.message, 'error');
+          this.props.showNotification(metadata.Message, 'error');
         }
       } else {
-        this.props.showNotification(error.msg, 'error');
+        this.props.showNotification(error.responseMessage, 'error');
       }
     } else {
       this.props.showNotification("Tidak ada respon dari server!", 'error');
@@ -455,7 +453,7 @@ class AuthForm extends React.Component {
   }
 
   canBeSubmitted() {
-    const filter = /^(?:(([\+])?\d{10,13})|(^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$))$/;
+    const filter = /^(?:(([\\+])?\d{10,13})|(^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$))$/;
     const { inputEmailNumber } = this.state;
     var result = inputEmailNumber.match(filter);
     return inputEmailNumber.length !== 0 && result ? true : false;
@@ -479,7 +477,7 @@ class AuthForm extends React.Component {
   }
 
   showNewOTP = () => {
-    //console.log("DONE TIMER");
+    // console.log("DONE TIMER");
     this.setState({
       showNewOTP: true
     })
@@ -490,12 +488,12 @@ class AuthForm extends React.Component {
       window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container", {
         'size': 'invisible',
         'callback': (response) => {
-          //console.log("HEDEK")
+          // console.log("HEDEK")
           // reCAPTCHA solved, allow signInWithPhoneNumber.
           // ...
         },
         'expired-callback': () => {
-          //console.log("HAHAHA")
+          // console.log("HAHAHA")
           // Response expired. Ask user to solve reCAPTCHA again.
           // ...
 
@@ -562,7 +560,7 @@ class AuthForm extends React.Component {
         prevInput.focus();
         prevInput.select();
       }
-      //console.log(this.state.isEnabledOTP)
+      // console.log(this.state.isEnabledOTP)
     } else {
       return
     }
@@ -594,7 +592,7 @@ class AuthForm extends React.Component {
             <img
               src={logo200Image}
               className="rounded"
-              style={{ width: 60, height: 60 }}
+              style={{ width: 60, height: 60, cursor: 'pointer' }}
               alt="logo"
               onClick={onLogoClick}
             />
@@ -752,12 +750,12 @@ class AuthForm extends React.Component {
 
                 if ((isEnabledLogin === true || isEnabled === true) && this.state.enterButton === false) { this.nextStep() }
                 // e.preventDefault();
-                //console.log("BISA ENTER CUMI!")
+                // console.log("BISA ENTER CUMI!")
                 break;
 
               case "F1":
                 this.myFunction();
-                //console.log(this.myFunction);
+                // console.log(this.myFunction);
                 // alert("F1")
                 e.preventDefault();
                 break;
@@ -772,7 +770,6 @@ class AuthForm extends React.Component {
 }
 
 export const STATE_LOGIN = 'LOGIN';
-export const STATE_CHECK = 'CHECK';
 export const STATE_FORGETPASS = 'FORGETPASS';
 export const FLAG_EMAIL = 'EMAIL';
 export const FLAG_NUMBER = 'NUMBER';

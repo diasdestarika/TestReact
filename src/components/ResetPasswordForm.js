@@ -1,7 +1,7 @@
 import logo200Image from 'assets/img/logo/logo_200.png';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Button, Form, Input, Label, Row, Col, Progress, Card, CardBody } from 'reactstrap';
+import React from 'react';
+import { Button, Form, Input, Label, Row, Col, Progress, Card } from 'reactstrap';
 import zxcvbn from 'zxcvbn';
 import * as myUrl from 'pages/urlLink';
 
@@ -187,18 +187,18 @@ class ResetPasswordForm extends React.Component {
     const code = this.state.passwordTest;
     var payload = {
       password: code,
-      token: window.localStorage.getItem('token'),
+      tokenCookies: window.localStorage.getItem('tokenCookies'),
     };
 
-    if (window.localStorage.getItem('tokenLogin')) {
+    if (window.localStorage.getItem('tokenCookiesLogin')) {
       var header = {
         "Content-Type": "application/json;charset=UTF-8",
-        "Authorization": window.localStorage.getItem('tokenLogin')
+        "Authorization": window.localStorage.getItem('tokenCookiesLogin')
       }
     }else{
       var header = {
         "Content-Type": "application/json;charset=UTF-8",
-        "Authorization": window.localStorage.getItem('tokenResetPwd')
+        "Authorization": window.localStorage.getItem('tokenCookiesResetPwd')
       }
     }
 
@@ -209,7 +209,7 @@ class ResetPasswordForm extends React.Component {
       body: JSON.stringify(payload)
     }
 
-    //console.log(option);
+    // console.log(option);
     let data = await fetch(urlA, option)
       .then(response => {
         if (response.ok) {
@@ -218,7 +218,7 @@ class ResetPasswordForm extends React.Component {
           this.showNotification("Koneksi ke server gagal!", 'error');
         }
       }).catch((err) => {
-        //console.log(err);
+        // console.log(err);
         this.showNotification("Koneksi ke server gagal!", 'error');
       });
 
@@ -250,7 +250,7 @@ class ResetPasswordForm extends React.Component {
     var currInput = event.target;
     var prevInput = event.target.previousElementSibling;
     var nextInput = event.target.nextElementSibling;
-    //console.log(event.target.value)
+    // console.log(event.target.value)
     if (currInput.id === "input6" && currInput.value.length > 0) {
       return;
     }

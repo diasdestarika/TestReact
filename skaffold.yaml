@@ -2,7 +2,7 @@ apiVersion: skaffold/v1beta2
 kind: Config
 build:
   artifacts:
-  - image: cfu-main/order-monitoring-fe
+  - image: cfu-main/purchasing-fe
     context: .
     docker: {}
   tagPolicy:
@@ -21,8 +21,8 @@ profiles:
   deploy:
     helm:
       releases:
-      - name: order-monitoring-fe
-        chartPath: charts/order-monitoring-fe
+      - name: purchasing-fe
+        chartPath: charts/purchasing-fe
         setValueTemplates:
           image.repository: '{{.DOCKER_REGISTRY}}/{{.IMAGE_NAME}}'
           image.tag: '{{.DIGEST_HEX}}'

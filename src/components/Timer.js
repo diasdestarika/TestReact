@@ -30,10 +30,10 @@ export default class Timer extends Component {
     }
 
     componentDidUpdate() {
-        //console.log("HM ",this.props.resetTimer);
+        // console.log("HM ",this.props.resetTimer);
         
         if (this.props.resetTimer === true) {
-            //console.log("KESELLL");
+            // console.log("KESELLL");
             this.setMinSec(this.props.minutes, this.props.seconds);
             this.myInterval = setInterval(() => {
                 const { seconds, minutes } = this.state
@@ -47,7 +47,7 @@ export default class Timer extends Component {
                     if (minutes === 0) {
                         clearInterval(this.myInterval)
                         if (this.props.timerOff !== undefined) {
-                            //console.log("DID UPDATE1ST");
+                            // console.log("DID UPDATE1ST");
                             
                             this.props.timerOff();
                         }
@@ -61,13 +61,13 @@ export default class Timer extends Component {
             }, 1000);
 
         } else {
-            //console.log("HAHAHAHAHA");
+            // console.log("HAHAHAHAHA");
         }
 
     }
 
     componentWillUnmount() {
-        //console.log("CRAZY");
+        // console.log("CRAZY");
         clearInterval(this.myInterval)
     }
 
