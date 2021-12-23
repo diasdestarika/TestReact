@@ -64,7 +64,7 @@ class TestPage extends React.Component {
         return(
             <Page
                 title = "Page Baru Dias"
-                breadcrumbs={[{ name: 'Page Baru Dias', active: true }]}
+                breadcrumbs={[{ name: 'Test update', active: true }]}
                 className="Page Baru Dias"
             >
                 <Card >
