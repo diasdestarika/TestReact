@@ -57,18 +57,18 @@ class TestPage extends React.Component {
                     <CardHeader><h3>User List</h3></CardHeader>
                     <CardHeader style={{textAlign: 'right'}}>
                         <Button>
-                            Ini Button lohh
+                            Ini Button
                         </Button>
 
                         <Button>
-                            Ini Button 2 lohh
+                            Ini Button 2 
                         </Button>
                         <Button>
-                            Ini Button 3 lohh
+                            Ini Button 3
                         </Button>
-                        <Button>
+                        {/* <Button>
                             Ini Button 4 lohh
-                        </Button>
+                        </Button> */}
                     </CardHeader>
                     
                     <CardBody>
