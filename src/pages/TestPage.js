@@ -25,7 +25,7 @@ class TestPage extends React.Component {
     }
 
     getUserList = () => {
-        const url = 'https://randomuser.me/api/?results=15'
+        const url = 'https://randomuser.me/api/?results=10'
     
 
         fetch(url, {
@@ -62,6 +62,9 @@ class TestPage extends React.Component {
 
                         <Button>
                             Ini Button 2
+                        </Button>
+                        <Button>
+                            Ini Button 3
                         </Button>
                     </CardHeader>
                     
