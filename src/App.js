@@ -78,6 +78,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
+    console.log('VERSION: ')
     this.getAccess();
   }
 

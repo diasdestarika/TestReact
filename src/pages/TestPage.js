@@ -5,7 +5,8 @@ import {
     Card,
     CardHeader,
     CardBody,
-    Table
+    Table,
+    Button,
 } from 'reactstrap'
 import axios from 'axios';
 import { database } from 'firebase';
@@ -23,21 +24,6 @@ class TestPage extends React.Component {
         this.getUserList()  
     }
 
-    // getUserList = () => {
-    //     const url = 'https://randomuser.me/api/?results=10'
-
-    //     axios
-    //     .get(url)
-    //     .then((res)=>{
-    //         if(res.data.results !== null){
-    //             this.setState({
-    //                 userlist:res.data.results
-    //             })
-    //             console.log(this.state.userlist)
-    //         }
-    //     })
-    // }
-
     getUserList = () => {
         const url = 'https://randomuser.me/api/?results=10'
     
@@ -52,9 +38,9 @@ class TestPage extends React.Component {
         })
         .then(data => 
             {
-                // this.setState({
-                //     userlist : data.results
-                // });
+                this.setState({
+                    userlist : data.results
+                });
                 console.log('data : ', data)
             }    
         );
@@ -63,12 +49,17 @@ class TestPage extends React.Component {
         const {userlist} = this.state
         return(
             <Page
-                title = "Page Baru Dias"
+                title = "Page Baru "
                 breadcrumbs={[{ name: 'Test update', active: true }]}
-                className="Page Baru Dias"
+                className="Page Baru "
             >
                 <Card >
                     <CardHeader><h3>User List</h3></CardHeader>
+                    <CardHeader style={{textAlign: 'right'}}>
+                        <Button>
+                            Ini Button
+                        </Button>
+                    </CardHeader>
                     
                     <CardBody>
                         <Table responsive>
