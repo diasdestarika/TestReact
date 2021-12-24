@@ -70,7 +70,7 @@ class TestPage extends React.Component {
                         {/* <Button>
                             Ini Button 4 lohh
                         </Button> */}
-                        <Label>test test...</Label>
+                        {/* <Label>test test...</Label> */}
                     </CardHeader>
                     
                     <CardBody>
