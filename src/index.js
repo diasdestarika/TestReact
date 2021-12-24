@@ -28,6 +28,18 @@ register('/service-worker.js', {
   },
   updated(registration) {
     console.log('New content is available; please refresh. (in index.js file)');
+    if (caches) {
+
+      // deleting saved cache one by one
+      console.log("deleting cache")
+      
+      caches.keys().then(function(names) {
+      
+        for (let name of names) caches.delete(name);
+        
+      });
+      
+    }
     window.location.reload(true)
   },
   offline() {
