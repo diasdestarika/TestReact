@@ -7,6 +7,7 @@ import {
     CardBody,
     Table,
     Button,
+    Label,
 } from 'reactstrap'
 import axios from 'axios';
 import { database } from 'firebase';
@@ -69,6 +70,7 @@ class TestPage extends React.Component {
                         {/* <Button>
                             Ini Button 4 lohh
                         </Button> */}
+                        <Label>test test...</Label>
                     </CardHeader>
                     
                     <CardBody>
