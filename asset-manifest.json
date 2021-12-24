@@ -1,20 +1,20 @@
 {
   "files": {
     "main.css": "/TestReact/static/css/main.b766e7bc.chunk.css",
-    "main.js": "/TestReact/static/js/main.6f933a3f.chunk.js",
-    "main.js.map": "/TestReact/static/js/main.6f933a3f.chunk.js.map",
-    "runtime-main.js": "/TestReact/static/js/runtime-main.514f6949.js",
-    "runtime-main.js.map": "/TestReact/static/js/runtime-main.514f6949.js.map",
+    "main.js": "/TestReact/static/js/main.6596c84a.chunk.js",
+    "main.js.map": "/TestReact/static/js/main.6596c84a.chunk.js.map",
+    "runtime-main.js": "/TestReact/static/js/runtime-main.e9fd7660.js",
+    "runtime-main.js.map": "/TestReact/static/js/runtime-main.e9fd7660.js.map",
     "static/js/2.25eac530.chunk.js": "/TestReact/static/js/2.25eac530.chunk.js",
     "static/js/2.25eac530.chunk.js.map": "/TestReact/static/js/2.25eac530.chunk.js.map",
     "static/js/3.febf1836.chunk.js": "/TestReact/static/js/3.febf1836.chunk.js",
     "static/js/3.febf1836.chunk.js.map": "/TestReact/static/js/3.febf1836.chunk.js.map",
-    "static/js/4.b6496715.chunk.js": "/TestReact/static/js/4.b6496715.chunk.js",
-    "static/js/4.b6496715.chunk.js.map": "/TestReact/static/js/4.b6496715.chunk.js.map",
+    "static/js/4.5d30daca.chunk.js": "/TestReact/static/js/4.5d30daca.chunk.js",
+    "static/js/4.5d30daca.chunk.js.map": "/TestReact/static/js/4.5d30daca.chunk.js.map",
     "static/js/5.769eb0dc.chunk.js": "/TestReact/static/js/5.769eb0dc.chunk.js",
     "static/js/5.769eb0dc.chunk.js.map": "/TestReact/static/js/5.769eb0dc.chunk.js.map",
     "index.html": "/TestReact/index.html",
-    "precache-manifest.a473f9632c7916b4bbec8e1ea6436d95.js": "/TestReact/precache-manifest.a473f9632c7916b4bbec8e1ea6436d95.js",
+    "precache-manifest.e8a1d56421c98deaf0366ea188317262.js": "/TestReact/precache-manifest.e8a1d56421c98deaf0366ea188317262.js",
     "service-worker.js": "/TestReact/service-worker.js",
     "static/css/main.b766e7bc.chunk.css.map": "/TestReact/static/css/main.b766e7bc.chunk.css.map",
     "static/js/2.25eac530.chunk.js.LICENSE.txt": "/TestReact/static/js/2.25eac530.chunk.js.LICENSE.txt",
@@ -26,9 +26,9 @@
     "static/media/warning.png": "/TestReact/static/media/warning.4f840589.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.514f6949.js",
+    "static/js/runtime-main.e9fd7660.js",
     "static/js/2.25eac530.chunk.js",
     "static/css/main.b766e7bc.chunk.css",
-    "static/js/main.6f933a3f.chunk.js"
+    "static/js/main.6596c84a.chunk.js"
   ]
 }
