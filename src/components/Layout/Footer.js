@@ -7,7 +7,7 @@ const Footer = () => {
     <Navbar>
       <Nav navbar>
         <NavItem>
-          2020Testing React 1.0.1b
+          2020 Testing React 0.0.6
         </NavItem>
       </Nav>
     </Navbar>
