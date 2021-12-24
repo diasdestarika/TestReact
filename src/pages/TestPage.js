@@ -66,6 +66,9 @@ class TestPage extends React.Component {
                         <Button>
                             Ini Button 3
                         </Button>
+                        <Button>
+                            Ini Button 4
+                        </Button>
                     </CardHeader>
                     
                     <CardBody>
