@@ -27,7 +27,8 @@ register('/service-worker.js', {
     console.log('New content is downloading.');
   },
   updated(registration) {
-    console.log('New content is available; please refresh.');
+    console.log('New content is available; please refresh. (in index.js file)');
+    alert('New content is available; please refresh.')
   },
   offline() {
     console.log(
