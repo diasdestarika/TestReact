@@ -65,7 +65,7 @@ class TestPage extends React.Component {
                             Ini Button 2 
                         </Button>
                         <Button>
-                            Ini Button 3 heeeee
+                            Ini Button 3
                         </Button>
                         {/* <Button>
                             Ini Button 4 lohh
