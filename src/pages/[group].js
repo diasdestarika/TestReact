@@ -1,5 +1,6 @@
 import {
   Box,
+  Collapse,
   Grid,
   Table,
   TableRow,
@@ -36,6 +37,8 @@ import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from '@mui/icons-material/Delete';
 import WarningIcon from '@mui/icons-material/Warning';
 import SyncIcon from '@mui/icons-material/Sync';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 
 import { debounce, isEmpty } from "lodash";
@@ -105,6 +108,7 @@ const PurchaseOrderAdd = () => {
   var [inputQtyProcode, setInputQtyProcode] = useState(0);
 
   const [modalProcode, setModalProcode] = useState(false)
+  const [modalAlokasi, setModalAlokasi] = useState(false)
   const [modalConfirm, setModalConfirm] = useState(false)
   var [modalType, setModalType] = useState("ADD");
 
@@ -113,9 +117,12 @@ const PurchaseOrderAdd = () => {
   var [insentif, setInsentif] = useState(0)
   var [salesAwal, setSalesAwal] = useState(0)
   var [procodBonus, setProcodBonus] = useState('')
+  var [listTipePO, setListTipePO] = useState([])
   var [tipePO, setTipePO] = useState({})
   var [listSupplier, setListSupplier] = useState([])
   var [selectedSupplier, setSelectedSupplier] = useState({})
+  var [inputOutletAlokasi, setInputOutletAlokasi] = useState({})
+  var [currProductPO, setCurrProductPO] = useState({})
 
 
   useEffect(() => {
@@ -123,8 +130,8 @@ const PurchaseOrderAdd = () => {
     setGroupPO((groupPO = parseInt(router.query.group)))
     debounceMountAllTipePO();
     debounceMountListSupplier(parseInt(router.query.group));
-    debounceMountAllOutlets(pt_id,2);
-    // displayToast('error', 'test toast')  
+    debounceMountAllOutlets(pt_id, 2);
+    // displayToast('error', 'test toast')
     
   }, [router.isReady]);
 
@@ -140,12 +147,12 @@ const PurchaseOrderAdd = () => {
       setTotalNetto(total);
     } else if (poDetails.length === 0) {
       setTotalNetto(0);
+      {tipePO.id === 4 && debounceMountAllOutlets(pt_id, 2)} //get all gudang //add alokasi
     }
   }, [poDetails]);
 
   useEffect(() => {
-    console.log('SELECTED PROCODE', isEmpty(inputProcode))
-    if(!isEmpty(inputProcode)){
+    if(!isEmpty(inputProcode) && modalProcode){
       var procod = ''
 
       if(inputProcode.pro_code) {
@@ -168,12 +175,7 @@ const PurchaseOrderAdd = () => {
   }, [inputProcode])
 
   useEffect(() => {
-    console.log('EFFECT BONUS', bonus)
-  }, [bonus])
-
-  useEffect(() => {
-    console.log('effect modal procode', listProcode.length === 0, modalProcode)
-    if (listProcode.length === 0 && modalProcode && modalType === 'ADD'){
+    if (listProcode.length === 0 && modalProcode  && modalType === 'ADD'){
       debounceMountListProcode(selectedSupplier.sup_code, groupPO)
     }
   }, [modalProcode])
@@ -185,17 +187,28 @@ const PurchaseOrderAdd = () => {
     }
   }, [selectedSupplier])
 
+  //add alokasi
+  useEffect(() => {
+    if(modalAlokasi){
+      debounceMountAllOutlets(pt_id, 1); //get outlet
+    }
+  }, [modalAlokasi])
+
+  //add alokasi
+  useEffect(() => {
+    if (!isEmpty(inputOutletAlokasi)){
+      setCurrProductPO({...currProductPO, alokasi_outcode: inputOutletAlokasi.outcode, alokasi_outname: inputOutletAlokasi.name})
+    }
+  }, [inputOutletAlokasi])
+
   async function mountProductsSupplier(supcode, groupPO) {
     try {
-      console.log('hit ke be list supplier', supcode, groupPO)
       setIsLoading((isLoading = true));
       const getProduct = await api.getListProductsBySupcode(supcode);
       const { data, error } = getProduct.data;
-      console.log('TEST DATA product]', getProduct)
       if (error.status === false) {
 
         var tempProd = []
-        console.log('GROUP PO', groupPO)
         if (groupPO === 1){
           tempProd = data.details.filter(
             (item) => item.pro_code.startsWith('01') || item.pro_code.startsWith('16') || item.pro_code.startsWith('18')
@@ -219,11 +232,10 @@ const PurchaseOrderAdd = () => {
 
   async function mountMasterProduct(procode, pt) {
     try {
-      console.log('hit ke be', procode)
       setIsLoading((isLoading = true))
       const getProduct = await api.getMasterProductById(procode, pt);
       const { data, error } = getProduct.data;
-      console.log('TEST DATA masterproduct', getProduct)
+
       if (error.status === true){
         displayToast('error', error.msg)
       } else {
@@ -244,11 +256,9 @@ const PurchaseOrderAdd = () => {
 
   async function mountProductBonus(procode, supcode) {
     try {
-      console.log('hit ke be', procode)
       setIsLoading(true)
       const getProduct = await api.getProductBonusbyID(procode, supcode);
       const { data, error } = getProduct.data;
-      console.log('TEST DATA product bonus', getProduct)
 
       if (error.status === true){
         displayToast('error', error.msg)
@@ -274,11 +284,9 @@ const PurchaseOrderAdd = () => {
 
   async function mountCreatePO(payload) {
     try {
-      console.log('hit ke be create', payload)
       setIsLoading(true)
       const createPO = await api.createPO(payload);
       const { data, error } = createPO.data;
-      console.log('resp create PO ', createPO)
       if(error.status) {
         setIsLoading(false)
         displayToast('error', error.msg);
@@ -305,7 +313,6 @@ const PurchaseOrderAdd = () => {
       setIsLoading(true)
       const tipePO = await api.getAllTipePO();
       const { data, error } = tipePO.data;
-      console.log('TEST DATA tipe po', tipePO)
 
       if (error.status === true){
         displayToast('error', error.msg)
@@ -337,7 +344,6 @@ const PurchaseOrderAdd = () => {
       setIsLoading((isLoading = true))
       const listSupplier = await api.getListSupplier(group);
       const { data, error } = listSupplier.data;
-      console.log('TEST DATA list supplier', listSupplier)
 
       if (error.status === true){
         displayToast('error', error.msg)
@@ -353,8 +359,9 @@ const PurchaseOrderAdd = () => {
   }
 
   async function mountAllOutlets(pt_id, type) {
+    setIsLoading((isLoading = true)) //add alokasi
+    setListGudang([]); //add alokasi
     try {
-      setIsLoading((isLoading = true))
       // const outlets = await api.getAllOutletsbyPT(pt_id, 2);//JANGAN LUPA UNCOMMENT
       const outlets = await api.getAllOutletsbyPT(pt_id, type);
       const { data, error } = outlets.data;
@@ -423,7 +430,6 @@ const PurchaseOrderAdd = () => {
   }
 
   function toggleModalProcode(type, data) {
-    console.log('detail state', data)
     
     if (type === "ADD") {
       setModalType("ADD");
@@ -431,11 +437,9 @@ const PurchaseOrderAdd = () => {
     } else if (type === "EDIT") {
       setModalType("EDIT");
       setInputProcode((inputProcode = data));
-      console.log('DATA KLIK EDIT', data)
       setInputQtyProcode(parseInt(data.pod_qty));
       setBonus(data.pod_bonusyn === "Y" ? true : false);
 
-      console.log('open edit', data)
     } else {
       setInputProcode([]);
       setInputQtyProcode(0);
@@ -447,6 +451,41 @@ const PurchaseOrderAdd = () => {
       setSalesAwal(0)
     }
     setModalProcode(!modalProcode);
+  }
+
+  //add alokasi
+  function toggleModalAlokasi(type, data) {
+    if (type === "ADD") {
+      setModalType("ADD");
+      // setInputProcode(data);
+      var tempCurr = {
+        alokasi_procode: data.pod_procod,
+        alokasi_proname: data.pod_proname,
+        alokasi_outcode: '',
+        alokasi_outname: '',
+        alokasi_qty: 0
+      }
+
+      setCurrProductPO(tempCurr)
+    
+    } else if (type === "EDIT") {
+      setModalType("EDIT");
+      // setInputProcode(data);
+      // var tempOutlet = {
+      //   outcode: data.alokasi_outcode,
+      //   name: data.alokasi_outname
+      // }
+
+      // setInputOutletAlokasi(tempOutlet)
+      setInputQtyProcode(parseInt(data.alokasi_qty));
+      setCurrProductPO(data)
+    } else {
+      setInputQtyProcode(0);
+      // setInputOutletAlokasi({});
+      // setInputProcode({})
+      setCurrProductPO({})
+    }
+    setModalAlokasi(!modalAlokasi);
   }
 
   function detailObj(detail, procod, qty, bonusYN){
@@ -479,6 +518,7 @@ const PurchaseOrderAdd = () => {
         pod_dapatbonus:alertBonus ? insentif : 0, //JANGAN LUPA DI SET
         pod_ppnvalue: detail.pro_ppnvalue,
         pod_updateby: userID,
+        pod_alokasi: [],
         // pod_updatetime: data.poh_updatetime
       };
     } else {
@@ -730,6 +770,60 @@ const PurchaseOrderAdd = () => {
     toggleModalProcode();
   }
 
+  //add alokasi
+  function createAlokasiObject() {
+    var tempDetailPO = [...poDetails]
+    console.log('save alokasi', currProductPO)
+    //get index alokasi data (dibedain karena obj nya beda)
+    // if(modalType === 'ADD'){
+    //   var indexDetailPO = tempDetailPO.findIndex(
+    //     (item) => item.pod_procod === inputProcode.pod_procod && item.pod_bonusyn === 'N'
+    //   )
+    //   var tempAlokasiData = tempDetailPO[indexDetailPO].pod_alokasi ? tempDetailPO[indexDetailPO].pod_alokasi : [];
+    //   var indexData = tempAlokasiData ? tempAlokasiData.findIndex(
+    //     (item) => item.alokasi_procode === inputProcode.pod_procod && item.alokasi_outcode === inputOutletAlokasi.outcode
+    //   ) : -1 ;
+    // } else {
+    //   var indexDetailPO = tempDetailPO.findIndex(
+    //     (item) => item.pod_procod === inputProcode.alokasi_procode && item.pod_bonusyn === 'N'
+    //   )
+    //   var tempAlokasiData = tempDetailPO[indexDetailPO].pod_alokasi ? tempDetailPO[indexDetailPO].pod_alokasi : [];
+    //   var indexData = tempAlokasiData ? tempAlokasiData.findIndex(
+    //     (item) => item.alokasi_procode === inputProcode.alokasi_procode && item.alokasi_outcode === inputOutletAlokasi.outcode
+    //   ) : -1 ;
+    // }
+
+    var indexDetailPO = tempDetailPO.findIndex(
+      (item) => item.pod_procod === currProductPO.alokasi_procode && item.pod_bonusyn === 'N'
+    )
+    var tempAlokasiData = tempDetailPO[indexDetailPO].pod_alokasi ? tempDetailPO[indexDetailPO].pod_alokasi : [];
+    var indexData = tempAlokasiData ? tempAlokasiData.findIndex(
+      (item) => item.alokasi_procode === currProductPO.alokasi_procode && item.alokasi_outcode === currProductPO.alokasi_outcode
+    ) : -1 ;
+      
+    //jika sudah ada di array, update / tambah qty yang sudah ada
+    if (indexData > -1){
+      modalType === 'ADD' ? tempAlokasiData[indexData].alokasi_qty += parseInt(inputQtyProcode) : tempAlokasiData[indexData].alokasi_qty = parseInt(inputQtyProcode) 
+    } else {
+
+      //jika belum ada, push baru ke array
+      var obj = {
+        alokasi_procode: currProductPO.alokasi_procode,
+        alokasi_proname: currProductPO.alokasi_proname,
+        alokasi_outcode: currProductPO.alokasi_outcode,
+        alokasi_outname: currProductPO.alokasi_outname,
+        alokasi_qty: parseInt(inputQtyProcode)
+      }
+
+      tempAlokasiData.push(obj)
+      
+    }
+
+    tempDetailPO[indexDetailPO].pod_alokasi = tempAlokasiData
+    setPODetails(tempDetailPO)
+    toggleModalAlokasi();
+  }
+
   function checkMultipleQty() {
     var qty = inputQtyProcode;
     var multiple = masterProduct.pro_kelipatan ? masterProduct.pro_kelipatan : 1;
@@ -773,6 +867,27 @@ const PurchaseOrderAdd = () => {
     setPODetails(tempArr);
   }
 
+  //add alokasi
+  function removeAlokasiOutlet(data) {
+    var tempDetailPO = [...poDetails];
+    
+    var indexProductDetail = tempDetailPO.findIndex(
+      (item) => item.pod_procod === data.alokasi_procode && item.pod_bonusyn === 'N'
+    )
+
+    var tempAlokasiData = tempDetailPO[indexProductDetail].pod_alokasi
+
+    var indexRemove = tempAlokasiData.findIndex(
+      (item) => item.alokasi_procode === data.alokasi_procode && item.alokasi_outcode === data.alokasi_outcode
+    )
+
+    tempAlokasiData.splice(indexRemove, 1)
+
+    tempDetailPO[indexProductDetail].pod_alokasi = tempAlokasiData
+
+    setPODetails(tempDetailPO);
+  }
+
   function checkAdd() {
     if (poDetails.length > 27) {
       displayToast('error', language === 'EN' ? 'The number of products cannot exceed 28' : 'Jumlah produk tidak dapat melebihi 28')
@@ -788,6 +903,216 @@ const PurchaseOrderAdd = () => {
     textAlign: 'start',
     color: theme.palette.text.secondary,
   }));
+
+  //add alokasi
+  function updateObjectValue(value){
+    var currentData = currProductPO
+
+    currentData.alokasi_outcode = value.outcode
+    currentData.alokasi_outname = value.name
+
+    setCurrProductPO((currProductPO = currentData))
+  }
+
+  //add alokasi
+  function getTotalAlokasiProd(currProd) {
+    if (currProd.pod_alokasi){
+      var arrQtyAlokasi = currProd.pod_alokasi.map(function (alokasi) {
+        return alokasi.alokasi_qty;
+      });
+
+      var tempTotal =  arrQtyAlokasi.reduce(function (acc, score) {
+        return acc + score;
+      }, 0);
+
+      return tempTotal;
+    } else {
+      return 0;
+    }
+  }
+
+  //add alokasi
+  function getTotalQtyProd(procod){
+     var arrQtyProduct = poDetails.filter(
+        (item) => item.pod_procod === procod
+      ).map(function (detail) {
+        return detail.pod_qty;
+      });
+
+    var tempTotalQty =  arrQtyProduct.reduce(function (acc, score) {
+      return acc + score;
+    }, 0);
+
+    return tempTotalQty;
+  }
+
+  //add alokasi
+  function isAlokasiMoreThanQty(procod, inputQty) {
+    var totalQty =  getTotalQtyProd(procod)
+
+    var indexDetail = poDetails.findIndex(
+      (item) => item.pod_procod === procod
+    )
+    
+    console.log('PO DETAIL VALIDASI', indexDetail, procod, inputQty)
+    var alokasiData = poDetails[indexDetail] ? poDetails[indexDetail].pod_alokasi : []
+
+    var arrQtyAlokasi = alokasiData.map(function (alokasi) {
+      return alokasi.alokasi_qty;
+    });
+
+    var totalAlokasi =  arrQtyAlokasi.reduce(function (acc, score) {
+      return acc + score;
+    }, 0);
+
+    if(modalType === 'ADD'){
+      console.log('validasi', totalAlokasi , inputQty , totalQty,  totalAlokasi + inputQty > totalQty)
+      return totalAlokasi + inputQty > totalQty;
+    } else {
+      console.log('validasi edit', totalAlokasi ,currProductPO.alokasi_qty , inputQty ,totalQty, (totalAlokasi - currProductPO.alokasi_qty) + inputQty > totalQty)
+      return (totalAlokasi - currProductPO.alokasi_qty) + inputQty > totalQty;
+    }
+  }
+
+  //add alokasi
+  function Row(props) {
+    const { item, idx } = props;
+    const [open, setOpen] = useState(false);
+    // var [totalAlokasi, setTotalAlokasi] = useState(0);
+    const totalAlokasi = getTotalAlokasiProd(item)
+    const totalQty = getTotalQtyProd(item.pod_procod)
+
+    return (
+      <>
+        <TableRow>
+          <TableCell align="center">{idx + 1}</TableCell>
+          <TableCell>{item.pod_procod}</TableCell>
+          <TableCell>
+            {item.pod_keterangan !== 0 && (
+              <WarningIcon color="warning"/>
+            )}
+          </TableCell>
+          <TableCell>{item.pod_proname}</TableCell>
+          <TableCell>{item.pod_qty}</TableCell>
+          <TableCell>{item.pod_buypackname}</TableCell>
+          <TableCell >{item.pod_sellunit}</TableCell>
+          <TableCell >{item.pod_sellpackname}</TableCell>
+          <TableCell align="center">
+                      <Chip
+                        label={item.pod_bonusyn}
+                        color={item.pod_bonusyn === 'N' ? 'error' : 'success'}
+                        size="small"
+                        sx={{fontWeight:900}}
+                      />
+                    </TableCell>
+                    <TableCell align="right">{formatNumber(item.pod_grossbeli)}</TableCell>
+                    <TableCell align="right">{item.pod_disc}%</TableCell>
+                    <TableCell align="right">{item.pod_disc2}%</TableCell>
+                    <TableCell >{item.pod_vat}%</TableCell>
+                    <TableCell align="right">{formatNumber(item.pod_nettobeli)}</TableCell>
+                    <TableCell align="right">{formatNumber(item.pod_nettobeli * item.pod_qty)}</TableCell>
+          <TableCell align="center">
+            <Grid container justifyContent={"center"}>
+              <Grid item>
+                <IconButton 
+                  color="error" 
+                  onClick={() => removeProcode(item)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Grid>
+              <Grid item>
+                <IconButton 
+                  color="info" 
+                  onClick={() => toggleModalProcode("EDIT", item)}
+                >
+                  <EditIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
+          </TableCell>
+          {(tipePO.id === 4 && item.pod_bonusyn === 'N') &&
+            <TableCell align="center" sx={{width:'5%'}}>
+              <IconButton
+                color="info" 
+                onClick={() => setOpen(!open)}
+              > 
+                {open ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
+              </IconButton>
+            </TableCell>}
+        </TableRow>
+        <TableRow>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={15}>
+          {/* unmountOnExit */}
+            <Collapse in={modalAlokasi ? true : open} unmountOnExit> 
+              <Box sx={{ margin: 1 }}>
+                <Typography variant="h6" gutterBottom component="div" sx={{ fontWeight: "600" }}>
+                  {language === 'EN' ? 'Product Allocation Detail' : 'Detail Alokasi Produk'}
+                </Typography>
+                <Typography variant="body1" gutterBottom component="div" sx={{ fontWeight: "600" }}>
+                  {language === 'EN' ? 'Total Qty (+bonus) : '+ totalQty+' || Total Allocation : '+totalAlokasi : 'Total Qty (+bonus) : '+ totalQty+' || Total Alokasi : '+totalAlokasi}
+                </Typography>
+                <Table size="small" aria-label="purchases" sx={{ maxWidth: 900 }}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: "600" }} >OUTLET</TableCell>
+                      <TableCell sx={{ fontWeight: "600" }} align="center">QTY</TableCell>
+                      <TableCell sx={{ fontWeight: "600" }} align="center">BUYPACK</TableCell>
+                      <TableCell sx={{ fontWeight: "600" }} align="center">ACTION</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {item.pod_alokasi && item.pod_alokasi.map((alokasi) => (
+                      <TableRow key={1}>
+                        <TableCell component="th" scope="row">
+                          {alokasi.alokasi_outcode} - {alokasi.alokasi_outname}
+                        </TableCell>
+                        <TableCell align="center">{alokasi.alokasi_qty}</TableCell>
+                        <TableCell align="center">{item.pod_buypackname}</TableCell>
+                        <TableCell align="center">
+                          <Grid container justifyContent={"center"}>
+                            <Grid item>
+                              <IconButton 
+                                color="error" 
+                                onClick={() => removeAlokasiOutlet(alokasi)}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </Grid>
+                            <Grid item>
+                              <IconButton 
+                                color="info" 
+                                onClick={() => toggleModalAlokasi("EDIT", alokasi)}
+                              >
+                                <EditIcon />
+                              </IconButton>
+                            </Grid>
+                          </Grid>
+                        </TableCell>
+                      </TableRow>
+                      ))}
+                      <TableRow>
+                        <TableCell align="center" colSpan={4}>
+                          <IconButton 
+                            fullWidth 
+                            size="small" 
+                            color="info"
+                            onClick={() => toggleModalAlokasi('ADD', item)}
+                          >
+                            <AddIcon/> {language === 'EN' ? 'Add Outlet' : 'Tambah Outlet'}
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    {/* ))} */}
+                  </TableBody>
+                </Table>
+              </Box>
+            </Collapse>
+          </TableCell>
+        </TableRow>
+      </>
+    );
+  }
 
   // render
   return (
@@ -810,7 +1135,28 @@ const PurchaseOrderAdd = () => {
           <Typography variant="subtitle1" sx={{ fontWeight: 600, mt: 0.5 }}>
           {language === "EN" ? "PO TYPE" : "TIPE PO"}
           </Typography>
-          <Item>&nbsp;{tipePO.nama}</Item>
+          {/* <Item>&nbsp;{tipePO.nama}</Item> 10/10/22 COMMENT FOR PO Alokasi*/}
+          {/* 10/10/22 ADDED choose tipe PO FOR PO Alokasi //add alokasi*/}
+          <Autocomplete 
+              fullWidth
+              size="small"
+              clearIcon={false}
+              loading={isLoading && listTipePO.length === 0}
+              getOptionLabel={(option) => option.nama}
+              options={listTipePO}
+              disabled = {poDetails.length > 0}
+              onChange={(event, newValue) => {
+                setTipePO(newValue);
+              }}
+              // loading={loading}
+              renderInput={(params) => (
+                <TextField
+                  value={tipePO && tipePO.nama}
+                  placeholder={language === 'EN' ? 'Choose a PO Type' : 'Pilih Tipe PO'}
+                  {...params}
+                />
+              )}
+            />
         </Grid>
         
       </Grid>
@@ -904,239 +1250,6 @@ const PurchaseOrderAdd = () => {
         </Grid>
       </Grid>
 
-
-     {/* <Grid container justifyContent="space-between" sx={{mb:2}}>
-      <Grid item>
-        <FormGroup>
-          <Typography variant="body1" sx={{ fontWeight:600,mt: 0.5, ml:1 }}>
-            {language === 'EN' ? 'PO NUMBER' : 'NO PO'}
-          </Typography>
-          <Paper
-            sx={{
-              backgroundColor:"whitesmoke",
-              color:'black',
-              height: 35,
-              width: 450,
-              lineHeight: '30px',
-            }}
-          >
-            <Typography variant="body1" sx={{ mt: 0.5, ml:1 }}>
-              {poData.poh_nopo}
-          </Typography>
-          </Paper>
-        </FormGroup>
-      </Grid>
-      <Grid item>
-        <FormGroup>
-          <Typography variant="body1" sx={{ fontWeight:600,mt: 0.5, ml:1 }}>
-          {language === 'EN' ? 'PO DATE' : 'TANGGAL PO'}
-          </Typography>
-          <Paper
-            sx={{
-              backgroundColor:"whitesmoke",
-              color:'black',
-              height: 35,
-              width: 450,
-              lineHeight: '30px',
-            }}
-          >
-            <Typography variant="body1" sx={{ mt: 0.5, ml:1 }}>
-            {formatDate(poData.poh_tglpo, 'ddd MMMM DD YYYY')}
-          </Typography>
-          </Paper>
-        </FormGroup>
-      </Grid>
-      <Grid item>
-        <FormGroup>
-          <Typography variant="body1" sx={{ fontWeight:600,mt: 0.5, ml:1 }}>
-          {language === 'EN' ? 'PO TYPE' : 'TIPE PO'}
-          </Typography>
-          <Paper
-            sx={{
-              backgroundColor:"whitesmoke",
-              color:'black',
-              height: 35,
-              width: 450,
-              lineHeight: '30px',
-            }}
-          >
-            <Typography variant="body1" sx={{ mt: 0.5, ml:1 }}>
-            {poData.poh_tipeponama}
-          </Typography>
-          </Paper>
-        </FormGroup>
-      </Grid>
-     </Grid>
-
-     <Grid container justifyContent="space-between" sx={{mb:2}}>
-      <Grid item>
-        <FormGroup>
-          <Typography variant="body1" sx={{ fontWeight:600,mt: 0.5, ml:1 }}>
-          {language === 'EN' ? 'PO EXPIRED DATE' : 'TANGGAL EXPIRED PO'}
-          </Typography>
-          <Paper
-            sx={{
-              backgroundColor:"whitesmoke",
-              color:'black',
-              height: 35,
-              width: 450,
-              lineHeight: '30px',
-            }}
-          >
-            <Typography variant="body1" sx={{ mt: 0.5, ml:1 }}>
-            {formatDate(poData.poh_expireddate, 'ddd MMMM DD YYYY')}
-          </Typography>
-          </Paper>
-        </FormGroup>
-      </Grid>
-      <Grid item>
-        <FormGroup>
-          <Typography variant="body1" sx={{ fontWeight:600,mt: 0.5, ml:1 }}>
-            SUPPLIER
-          </Typography>
-          <Paper
-            sx={{
-              backgroundColor:"whitesmoke",
-              color:'black',
-              height: 35,
-              width: 450,
-              lineHeight: '30px',
-            }}
-          >
-            <Typography variant="body1" sx={{ mt: 0.5, ml:1 }}>
-            {poData.poh_supname}
-          </Typography>
-          </Paper>
-        </FormGroup>
-      </Grid>
-      <Grid item>
-        <FormGroup>
-          <Typography variant="body1" sx={{ fontWeight:600,mt: 0.5, ml:1 }}>
-          {language === 'EN' ? 'RECEIVING WAREHOUSE' : 'GUDANG PENERIMA'}
-          </Typography>
-          <Paper
-            sx={{
-              backgroundColor:"whitesmoke",
-              color:'black',
-              height: 35,
-              width: 450,
-              lineHeight: '30px',
-            }}
-          >
-            <Typography variant="body1" sx={{ mt: 0.5, ml:1 }}>
-            {poData.poh_outname}
-          </Typography>
-          </Paper>
-        </FormGroup>
-      </Grid>
-     </Grid>
-
-     <Grid container justifyContent="space-between" sx={{mb:2}}>
-      <Grid item>
-        <FormGroup>
-          <Typography variant="body1" sx={{ fontWeight:600,mt: 0.5, ml:1 }}>
-            MINIMUM VALUE PO
-          </Typography>
-          <Paper
-            sx={{
-              backgroundColor:"whitesmoke",
-              color:'black',
-              height: 35,
-              width: 450,
-              lineHeight: '30px',
-            }}
-          >
-            <Typography variant="body1" sx={{ mt: 0.5, ml:1 }}>
-            {poData.poh_minvalue}
-          </Typography>
-          </Paper>
-        </FormGroup>
-      </Grid>
-      <Grid item>
-        <FormGroup>
-          <Typography variant="body1" sx={{ fontWeight:600,mt: 0.5, ml:1 }}>
-            TOP
-          </Typography>
-          <Paper
-            sx={{
-              backgroundColor:"whitesmoke",
-              color:'black',
-              height: 35,
-              width: 450,
-              lineHeight: '30px',
-            }}
-          >
-            <Typography variant="body1" sx={{ mt: 0.5, ml:1 }}>
-            {poData.poh_top}
-          </Typography>
-          </Paper>
-        </FormGroup>
-      </Grid>
-      <Grid item>
-        <FormGroup>
-          <Typography variant="body1" sx={{ fontWeight:600,mt: 0.5, ml:1 }}>
-            PKPYN
-          </Typography>
-          <Paper
-            sx={{
-              backgroundColor:"whitesmoke",
-              color:'black',
-              height: 35,
-              width: 450,
-              lineHeight: '30px',
-            }}
-          >
-            <Typography variant="body1" sx={{ mt: 0.5, ml:1 }}>
-            {poData.poh_pkpyn}
-          </Typography>
-          </Paper>
-        </FormGroup>
-      </Grid>
-     </Grid>
-
-     <Grid container justifyContent="space-between" sx={{mb:6}}>
-      <Grid item >
-        <FormGroup>
-          <Typography variant="body1" sx={{ fontWeight:600,mt: 0.5, ml:1 }}>
-            STATUS PRINT
-          </Typography>
-          <Paper
-            sx={{
-              backgroundColor:"whitesmoke",
-              color:'black',
-              height: 35,
-              width: 700,
-              lineHeight: '30px',
-            }}
-          >
-            <Typography variant="body1" sx={{ mt: 0.5, ml:1 }}>
-            {poData.poh_print}
-          </Typography>
-          </Paper>
-        </FormGroup>
-      </Grid>
-      <Grid item>
-        <FormGroup>
-          <Typography variant="body1" sx={{ fontWeight:600,mt: 0.5, ml:1 }}>
-            STATUS EMAIL
-          </Typography>
-          <Paper
-            sx={{
-              backgroundColor:"whitesmoke",
-              color:'black',
-              height: 35,
-              width: 700,
-              lineHeight: '30px',
-            }}
-          >
-            <Typography variant="body1" sx={{ mt: 0.5, ml:1 }}>
-            {language === 'EN' ? poData.statusemailen : poData.statusemailid}
-          </Typography>
-          </Paper>
-        </FormGroup>
-      </Grid>
-     </Grid> */}
-
      <Grid container justifyContent="flex-end" sx={{mb:2}}>
       <Grid item>
         <Button
@@ -1157,7 +1270,7 @@ const PurchaseOrderAdd = () => {
           <Table size="medium">
             <TableHead>
               <TableRow>
-                <TableCell sx={{ fontWeight: "600" }} align="center">No.</TableCell>
+              <TableCell sx={{ fontWeight: "600" }} align="center">No.</TableCell>
                 <TableCell sx={{ fontWeight: "600" }}>PROCODE</TableCell>
                 <TableCell sx={{ fontWeight: "600" }}></TableCell>
                 <TableCell sx={{ fontWeight: "600" }}>
@@ -1171,66 +1284,21 @@ const PurchaseOrderAdd = () => {
                 <TableCell sx={{ fontWeight: "600" }} align="right">GROSS</TableCell>
                 <TableCell sx={{ fontWeight: "600" }} align="right">DISC</TableCell>
                 <TableCell sx={{ fontWeight: "600" }} align="right">DISC 2</TableCell>
+                <TableCell sx={{ fontWeight: "600" }} align="center">BONUS</TableCell>
                 <TableCell sx={{ fontWeight: "600" }}>VAT</TableCell>
                 <TableCell sx={{ fontWeight: "600" }}align="right">NETTO</TableCell>
                 <TableCell sx={{ fontWeight: "600" }}align="right">TOTAL NETTO</TableCell>
                 <TableCell sx={{ fontWeight: "600" }}align="center">ACTION</TableCell>
+                {/* //add alokasi */}
+                {tipePO.id === 4 && <TableCell sx={{ fontWeight: "600", width:'5%' }}align="center">{language === 'EN' ? 'Outlet Allocation' : 'Alokasi Outlet'}</TableCell>}
               </TableRow>
             </TableHead>
             <TableBody>
               {poDetails &&
                 poDetails.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell align="center">{index + 1}</TableCell>
-                    <TableCell>{item.pod_procod}</TableCell>
-                    <TableCell>
-                      {item.pod_keterangan !== 0 && (
-                        <WarningIcon color="warning"/>
-                      )}
-                    </TableCell>
-                    <TableCell>{item.pod_proname}</TableCell>
-                    <TableCell>{item.pod_qty}</TableCell>
-                    <TableCell>{item.pod_buypackname}</TableCell>
-                    <TableCell >{item.pod_sellunit}</TableCell>
-                    <TableCell >{item.pod_sellpackname}</TableCell>
-                    <TableCell align="center">
-                      <Chip
-                        label={item.pod_bonusyn}
-                        color={item.pod_bonusyn === 'N' ? 'error' : 'success'}
-                        size="small"
-                        sx={{fontWeight:900}}
-                      />
-                    </TableCell>
-                    <TableCell align="right">{formatNumber(item.pod_grossbeli)}</TableCell>
-                    <TableCell align="right">{item.pod_disc}%</TableCell>
-                    <TableCell align="right">{item.pod_disc2}%</TableCell>
-                    <TableCell >{item.pod_vat}%</TableCell>
-                    <TableCell align="right">{formatNumber(item.pod_nettobeli)}</TableCell>
-                    <TableCell align="right">{formatNumber(item.pod_nettobeli * item.pod_qty)}</TableCell>
-                    <TableCell align="center">
-                      <Grid container justifyContent={"center"}>
-                        <Grid item>
-                          <IconButton 
-                            color="error" 
-                            onClick={() => removeProcode(item)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </Grid>
-                        <Grid item>
-                          <IconButton 
-                            color="info" 
-                            onClick={() => toggleModalProcode("EDIT", item)}
-                          >
-                            <EditIcon />
-                          </IconButton>
-                        </Grid>
-                      </Grid>
-                    </TableCell>
-                  </TableRow>
+                  <Row key={index} item={item} idx={index}/>  // 11/10/22 collapsible row table for allocation produk
                 ))}
                 <TableRow >
-                  {/* <TableCell rowSpan={3} /> */}
                   <TableCell colSpan={13}/>
                   <TableCell align="right">
                     <Typography variant="body1" sx={{ fontWeight: 600, mt: 0.5 }}>
@@ -1247,23 +1315,6 @@ const PurchaseOrderAdd = () => {
             </TableBody>
           </Table>
         </TableContainer>
-        
-        {/* <Grid container justifyContent="flex-end" spacing={2}>
-          <Grid item>
-          <Typography variant="body1" sx={{ fontWeight: 600, mt: 0.5 }}>
-              Total : 
-            </Typography>
-          </Grid>
-          <Grid item md={2} sx={{textAlign:'right'}}>
-
-          <Typography variant="body1" sx={{ fontWeight: 600, mt: 0.5 }}>
-              {formatNumber(100000000000)}
-            </Typography>
-          </Grid>
-          <Grid item md={1}>
-
-          </Grid>
-        </Grid> */}
       </Paper>
 
       <Divider sx={{ my: 2, mb: 2 }} />
@@ -1282,6 +1333,7 @@ const PurchaseOrderAdd = () => {
               isEmpty(inputGudang) || 
               isEmpty(selectedSupplier) || 
               pt_id === undefined ||  
+              isEmpty(tipePO) || //add alokasi
               totalNetto < 0} //JANGAN LUPA GANTI KE min value supplier
             onClick={() => setModalConfirm(true)}
           >
@@ -1304,6 +1356,7 @@ const PurchaseOrderAdd = () => {
       {/* MODAL PROCODE*/}
       <Dialog
         open={modalProcode}
+        // open={true}
         onClose={() => toggleModalProcode()}
         fullWidth
         PaperProps={{ sx: { position: "fixed", top: 10} }}
@@ -1427,6 +1480,119 @@ const PurchaseOrderAdd = () => {
         </DialogActions>
       </Dialog>
       {/* MODAL PROCODE*/}
+
+      {/* MODAL ALOKASI //add alokasi*/}
+      <Dialog
+        open={modalAlokasi}
+        // open={true}
+        onClose={() => toggleModalAlokasi()}
+        fullWidth
+        PaperProps={{ sx: { position: "fixed", top: 10} }}
+        >
+        <DialogTitle sx={{fontWeight: 600}}>{language === 'EN' ? (modalType === 'ADD' ? 'ADD ALLOCATION' : 'EDIT ALLOCATION') : (modalType === 'ADD'? 'TAMBAH ALOKASI':'EDIT ALOKASI')}</DialogTitle>
+        <DialogContent>
+          <Grid container direction="column" sx={{mb:1}}>
+            <Grid item>
+              Procode
+            </Grid>
+            <Grid item>
+                <TextField
+                  disabled
+                  fullWidth
+                  // value={modalType === 'ADD' ? inputProcode.pod_procod + ' - ' + inputProcode.pod_proname : inputProcode.alokasi_procode + ' - ' + inputProcode.alokasi_proname}
+                  value={currProductPO.alokasi_procode + ' - ' + currProductPO.alokasi_proname}
+                />
+            </Grid>
+          </Grid>
+          <Grid container direction="column" sx={{mb:1}}>
+            <Grid item>
+              {language === 'EN' ? 'To Outlet' : 'Ke Outlet'}
+            </Grid>
+            <Grid item>
+              {modalType === 'ADD' ? (
+                <Autocomplete 
+                  fullWidth
+                  size="small"
+                  clearIcon={true}
+                  loading={isLoading && listGudang.length === 0}
+                  getOptionLabel={(option) => option.outcode + ' - ' + option.name}
+                  options={listGudang}
+                  // onChange={(event, newValue) => {setInputOutletAlokasi(newValue)}}
+                  onChange={(event, newValue) => {setInputOutletAlokasi(newValue)}}
+                  // loading={loading}
+                  renderInput={(params) => (
+                    <TextField
+                    // value={inputOutletAlokasi && inputOutletAlokasi.outcode + ' - ' + inputOutletAlokasi.name}
+                    value={currProductPO.alokasi_outcode + ' - ' + currProductPO.alokasi_outname}
+                    placeholder={language === 'EN' ? 'Choose an Outlet' : 'Pilih Outlet'}
+                    {...params}
+                    />
+                    )}
+                    />
+              ):(
+                <TextField
+                disabled
+                fullWidth
+                value={currProductPO && currProductPO.alokasi_outcode + ' - ' + currProductPO.alokasi_outname}
+                />
+                )}
+              
+            </Grid>
+          </Grid>
+          <Grid container direction="column" sx={{mb:1}}>
+            <Grid item>
+              Qty
+            </Grid>
+            <Grid item>
+              <TextField
+                fullWidth
+                type="number"
+                size="small"
+                min={0}
+                value={inputQtyProcode}
+                onChange={(e) => setInputQtyProcode(e.target.value)}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Grid container justifyContent="center" spacing={1}>
+            <Grid item>
+              <Button 
+                color="success" 
+                variant="contained"
+                size="small"
+                disabled={
+                  parseInt(inputQtyProcode) === 0 ||
+                  parseInt(inputQtyProcode) < 0 ||
+                  isNaN(parseInt(inputQtyProcode)) ||
+                  inputQtyProcode === "" ||
+                  isAlokasiMoreThanQty(currProductPO.alokasi_procode, parseInt(inputQtyProcode))||
+                  // inputProcode.length === 0 ||
+                  // isEmpty(inputProcode) ||
+                  // isEmpty(inputOutletAlokasi)
+                  currProductPO.alokasi_outcode === '' ||
+                  currProductPO.alokasi_procode === '' 
+                }
+                onClick={() => createAlokasiObject()}
+              >
+                {language === 'EN' ? 'Save' : 'Simpan'}
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button 
+                color="error" 
+                variant="contained"
+                size="small"
+                onClick={() => toggleModalAlokasi()}
+              >
+                {language === 'EN' ? 'Cancel' : 'Batal'}
+              </Button>
+            </Grid>
+          </Grid>
+        </DialogActions>
+      </Dialog>
+      {/* MODAL ALOKASI */}
 
       {/* MODAL KONFIRMASI ADD */}
       <Dialog
